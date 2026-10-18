@@ -8,10 +8,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "prisma skills sync || exit 0"
+    "postinstall": "prisma skills sync || exit 0",
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
-    "@prisma/client": "^7.10.0",
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -21,9 +23,11 @@
     "helmet": "^8.3.0",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
-    "morgan": "^1.12.1"
+    "morgan": "^1.12.1",
+    "nodemon": "^3.1.14",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
-    "prisma": "^8.0.0-rc.22"
+    "prisma": "7.10.1"
   }
 }
