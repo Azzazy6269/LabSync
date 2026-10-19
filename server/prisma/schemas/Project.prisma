@@ -1,0 +1,27 @@
+model Project {
+  id           String        @id @default(uuid())
+  title        String
+  description  String        @db.Text
+  field        String        // Scientific field(Bioinformatics, Physics, Chemistry...)
+  status       ProjectStatus @default(PENDING_SUPERVISOR_ACCEPTANCE)
+
+  // Researcher
+  authorId     String
+  author       User          @relation("ProjectAuthor", fields: [authorId], references: [id])
+
+  // Supervisior
+  supervisorId String
+  supervisor   User          @relation("ProjectSupervisor", fields: [supervisorId], references: [id])
+
+  // Docs and Comments related to the research
+  documents    Document[]
+  comments     Comment[]
+  chunks       DocumentChunk[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([authorId])
+  @@index([supervisorId])
+  @@index([status])
+}

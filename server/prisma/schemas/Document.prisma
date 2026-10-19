@@ -1,0 +1,46 @@
+model Document {
+  id           String          @id @default(uuid())
+  projectId    String
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  uploadedById String
+  uploadedBy   User            @relation(fields: [uploadedById], references: [id])
+  
+  title        String
+  fileUrl      String          
+  docType      DocType
+  version      Int             @default(1)
+
+  chunks       DocumentChunk[]
+  comments     Comment[]
+
+  createdAt    DateTime        @default(now())
+
+  @@index([projectId])
+}
+
+
+// ==========================================
+// RAG & VECTOR EMBEDDINGS (pgvector)
+// ==========================================
+
+model DocumentChunk {
+  id          String                    @id @default(uuid())
+  projectId   String
+  project     Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  documentId  String
+  document    Document                  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  content     String                    @db.Text 
+  
+
+  embedding   Unsupported("vector(1536)")?
+
+  accessLevel RAGAccessLevel            @default(PRIVATE_PROJECT)
+
+  createdAt   DateTime                  @default(now())
+
+  @@index([projectId])
+  @@index([accessLevel])
+}
