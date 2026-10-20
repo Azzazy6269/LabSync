@@ -1,0 +1,36 @@
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  passwordHash   String?       // optional for Google OAuth
+  googleId       String?       @unique
+  fullName       String
+  phone          String
+  nationalId     String        @unique
+  nationalIdCard String?       
+  jobTitle       String
+  
+  role           Role          @default(RESEARCHER)
+  status         AccountStatus @default(PENDING_ADMIN_APPROVAL)
+  
+  // for future features
+  metadata       Json?
+
+  // Approval data
+  approvedById   String?
+  approvedBy     User?         @relation("AdminApprovals", fields: [approvedById], references: [id])
+  approvedUsers  User[]        @relation("AdminApprovals")
+
+  // Relationships with Projects
+  authoredProjects   Project[]  @relation("ProjectAuthor")
+  supervisedProjects Project[]  @relation("ProjectSupervisor")
+  
+  // Docs and Comments
+  uploadedDocuments  Document[]
+  comments           Comment[]
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([role])
+  @@index([status])
+}

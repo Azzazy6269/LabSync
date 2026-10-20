@@ -1,0 +1,14 @@
+model Comment {
+  id         String    @id @default(uuid())
+  projectId  String
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  content    String    @db.Text
+  createdAt  DateTime  @default(now())
+}
