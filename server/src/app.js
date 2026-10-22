@@ -4,13 +4,14 @@ const cors = require('cors');
 const morgan = require('morgan');
 const { xss } = require('express-xss-sanitizer');
 const hpp = require('hpp');
+const limiter = require('./middlewares/rateLimiter');
+const errorHandler = require('./middlewares/errorHandler');
+
 
 
 const app = express();
-
-app.use(helmet.default());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
-
+app.use(express.json());
+//console.log({ limiter, errorHandler, xss });
 if (process.env.NODE_ENV === 'development') {
   console.log('Running in development mode');
   app.use(morgan('dev'));
@@ -19,14 +20,17 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
-app.use(express.json());
+// Middlewares
+app.set('trust proxy', 1);
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+app.use(helmet());
 app.use(xss());
 app.use(hpp());
+app.use(limiter);
 
 
-app.use((req, res, next) => {
-  next(new Error(404, `Route not found: ${req.method} ${req.originalUrl}`));
-});
+// Routers
+app.use(errorHandler);
 
 
 module.exports = app;
