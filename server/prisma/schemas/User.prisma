@@ -15,6 +15,7 @@ model User {
   // for future features
   metadata       Json?
 
+  
   // Approval data
   approvedById   String?
   approvedBy     User?         @relation("AdminApprovals", fields: [approvedById], references: [id])
