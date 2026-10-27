@@ -33,6 +33,15 @@ const signUpBody = Joi.object({
             'any.required': 'Password is required'
         }),
 
+    repeatPassword: Joi.string()
+        .valid(Joi.ref('password'))
+        .required()
+        .messages({
+            'any.only': 'Passwords do not match',
+            'string.empty': 'Please confirm your password',
+            'any.required': 'Please confirm your password'
+        }),
+        
     phone: Joi.string()
         .trim()
         .pattern(/^01[0125][0-9]{8}$/)

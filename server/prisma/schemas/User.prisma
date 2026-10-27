@@ -17,9 +17,9 @@ model User {
 
   // verification data
   isEmailVerified Boolean      @default(false)
-  otpHash       String?         
-  otpExpiresAt  DateTime?
 
+  // OTPs
+  otps               Otp[]
 
   // Approval data
   approvedById   String?

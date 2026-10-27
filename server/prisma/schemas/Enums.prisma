@@ -12,6 +12,11 @@ enum AccountStatus {
   SUSPENDED
 }
 
+enum OtpPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
 enum ProjectStatus {
   PENDING_SUPERVISOR_ACCEPTANCE
   PENDING_ADMIN_APPROVAL

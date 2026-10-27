@@ -5,8 +5,74 @@ const bcrypt = require('bcrypt');
 const APIError = require('../../utils/APIError');
 const jwtSign = util.promisify(jwt.sign);
 
+
+const MAX_OTP_ATTEMPTS = 5;
+
+// Helper: Delete old OTPs for this purpose and generate a new one
+const generateAndSaveOtp = async (userId, purpose, expiresInMinutes = 10) => {
+    // Invalidate any existing OTPs for this specific user & purpose
+    await prisma.otp.deleteMany({
+        where: { userId, purpose }
+    });
+
+    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeHash = await bcrypt.hash(rawOtp, 10);
+    const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+
+    await prisma.otp.create({
+        data: {
+            userId,
+            purpose,
+            codeHash,
+            expiresAt
+        }
+    });
+
+    return rawOtp;
+};
+
+// Helper: Verify OTP with attempt-throttling and consumption
+const verifyAndConsumeOtp = async (userId, purpose, rawOtp) => {
+    const otpRecord = await prisma.otp.findFirst({
+        where: { userId, purpose },
+        orderBy: { createdAt: 'desc' }
+    });
+
+    if (!otpRecord) {
+        throw new APIError("No active OTP found. Please request a new code.", 400);
+    }
+
+    if (new Date() > otpRecord.expiresAt) {
+        await prisma.otp.delete({ where: { id: otpRecord.id } });
+        throw new APIError("OTP has expired. Please request a new code.", 400);
+    }
+
+    if (otpRecord.attempts >= MAX_OTP_ATTEMPTS) {
+        await prisma.otp.delete({ where: { id: otpRecord.id } });
+        throw new APIError("Too many failed attempts. Please request a new OTP.", 429);
+    }
+
+    const isValid = await bcrypt.compare(rawOtp, otpRecord.codeHash);
+    if (!isValid) {
+        await prisma.otp.update({
+            where: { id: otpRecord.id },
+            data: { attempts: { increment: 1 } }
+        });
+        throw new APIError("Invalid OTP code", 400);
+    }
+
+    // OTP validated successfully -> consume (delete) it
+    await prisma.otp.delete({ where: { id: otpRecord.id } });
+    return true;
+};
+
+
 const signUp = async (userData) => {
-    const { email, fullName, phone, nationalId, jobTitle, role, password } = userData;
+    const { email, fullName, phone, nationalId, jobTitle, role, password, repeatPassword } = userData;
+
+    if (password !== repeatPassword) {
+        throw new APIError("Passwords do not match", 400);
+    }
 
     const existingVerifiedEmail = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
     if (existingVerifiedEmail) {
@@ -19,10 +85,6 @@ const signUp = async (userData) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-
-    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpHash = await bcrypt.hash(rawOtp, 10);
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     // Check if a user with the same email or national ID exists, regardless of verification status
     const existingEmailOrNationalId = await prisma.user.findFirst({ where: {
@@ -44,8 +106,6 @@ const signUp = async (userData) => {
                 jobTitle,
                 role,
                 passwordHash,
-                otpHash,
-                otpExpiresAt,
                 createdAt: new Date()
             }
         });
@@ -58,14 +118,13 @@ const signUp = async (userData) => {
                 nationalId,
                 jobTitle,
                 role,
-                passwordHash,
-                otpHash,
-                otpExpiresAt
+                passwordHash
             }
         });
     }
 
-    const { passwordHash: _, otpHash: __, ...userWithoutSensitiveData } = createdUser;
+    const rawOtp = await generateAndSaveOtp(createdUser.id, 'EMAIL_VERIFICATION');
+    const { passwordHash: _, ...userWithoutSensitiveData } = createdUser;
     
     return { user: userWithoutSensitiveData, rawOtp };
 };
@@ -84,25 +143,13 @@ const verifyOtp = async ({ email, otp }) => {
         throw new APIError("Email is already verified", 400);
     }
 
-    if (!user.otpHash || !user.otpExpiresAt) {
-        throw new APIError("No OTP found, please request a new one", 400);
-    }
+    await verifyAndConsumeOtp(user.id, 'EMAIL_VERIFICATION', otp);
 
-    if (new Date() > user.otpExpiresAt) {
-        throw new APIError("OTP has expired, please request a new one", 400);
-    }
-
-    const isOtpValid = await bcrypt.compare(otp, user.otpHash);
-    if (!isOtpValid) {
-        throw new APIError("Invalid OTP code", 400);
-    }
 
     const updatedUser = await prisma.user.update({
         where: { id: user.id },
         data: {
-            isEmailVerified: true,
-            otpHash: null,
-            otpExpiresAt: null
+            isEmailVerified: true
         },
         select: {
             id: true,
@@ -131,14 +178,7 @@ const resendOtp = async (email) => {
         throw new APIError("Email is already verified", 400);
     }
 
-    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpHash = await bcrypt.hash(rawOtp, 10);
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
-    await prisma.user.update({
-        where: { id: user.id },
-        data: { otpHash, otpExpiresAt }
-    });
+    const rawOtp = await generateAndSaveOtp(user.id, 'EMAIL_VERIFICATION');
 
     return { email: user.email, rawOtp, fullName: user.fullName };
 };
@@ -166,7 +206,7 @@ const signIn = async (data) => {
     };
 
     const token = await jwtSign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    const { passwordHash: _, otpHash: __, ...userWithoutPassword } = user;
+    const { passwordHash: _, ...userWithoutPassword } = user;
 
     return { token, user: userWithoutPassword };
 };
