@@ -1,0 +1,365 @@
+const util = require('util')
+const prisma = require('../../config/prisma');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const APIError = require('../../utils/APIError');
+const jwtSign = util.promisify(jwt.sign);
+
+
+const MAX_OTP_ATTEMPTS = 5;
+
+// Helper: Delete old OTPs for this purpose and generate a new one
+const generateAndSaveOtp = async (userId, purpose, expiresInMinutes = 10) => {
+    // Invalidate any existing OTPs for this specific user & purpose
+    await prisma.otp.deleteMany({
+        where: { userId, purpose }
+    });
+
+    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeHash = await bcrypt.hash(rawOtp, 10);
+    const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+
+    await prisma.otp.create({
+        data: {
+            userId,
+            purpose,
+            codeHash,
+            expiresAt
+        }
+    });
+
+    return rawOtp;
+};
+
+// Helper: Verify OTP with attempt-throttling and consumption
+const verifyAndConsumeOtp = async (userId, purpose, rawOtp) => {
+    const otpRecord = await prisma.otp.findFirst({
+        where: { userId, purpose },
+        orderBy: { createdAt: 'desc' }
+    });
+
+    if (!otpRecord) {
+        throw new APIError("No active OTP found. Please request a new code.", 400);
+    }
+
+    if (new Date() > otpRecord.expiresAt) {
+        await prisma.otp.delete({ where: { id: otpRecord.id } });
+        throw new APIError("OTP has expired. Please request a new code.", 400);
+    }
+
+    if (otpRecord.attempts >= MAX_OTP_ATTEMPTS) {
+        await prisma.otp.delete({ where: { id: otpRecord.id } });
+        throw new APIError("Too many failed attempts. Please request a new OTP.", 429);
+    }
+
+    const isValid = await bcrypt.compare(rawOtp, otpRecord.codeHash);
+    if (!isValid) {
+        await prisma.otp.update({
+            where: { id: otpRecord.id },
+            data: { attempts: { increment: 1 } }
+        });
+        throw new APIError("Invalid OTP code", 400);
+    }
+
+    // OTP validated successfully -> consume (delete) it
+    await prisma.otp.delete({ where: { id: otpRecord.id } });
+    return true;
+};
+
+
+const signUp = async (userData) => {
+    const { email, fullName, phone, nationalId, jobTitle, role, password, repeatPassword } = userData;
+
+    if (password !== repeatPassword) {
+        throw new APIError("Passwords do not match", 400);
+    }
+
+    const existingVerifiedEmail = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
+    if (existingVerifiedEmail) {
+        throw new APIError("User with the same email already exists", 400);
+    }
+
+    const existingVerifiedNationalId = await prisma.user.findUnique({ where: { nationalId, isEmailVerified:true } });
+    if (existingVerifiedNationalId) {
+        throw new APIError("User with the same national ID already exists", 400);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // Check if a user with the same email or national ID exists, regardless of verification status
+    const existingEmailOrNationalId = await prisma.user.findFirst({ where: {
+        OR: [
+            { email },
+            { nationalId }
+        ],
+        }
+     });
+    let createdUser;
+    if (existingEmailOrNationalId) {
+        createdUser = await prisma.user.update({
+            where: { id: existingEmailOrNationalId.id },
+            data: {
+                email,
+                fullName,
+                phone,
+                nationalId,
+                jobTitle,
+                role,
+                passwordHash,
+                createdAt: new Date()
+            }
+        });
+    }else{
+        createdUser = await prisma.user.create({
+            data: {
+                email,
+                fullName,
+                phone,
+                nationalId,
+                jobTitle,
+                role,
+                passwordHash
+            }
+        });
+    }
+
+    const rawOtp = await generateAndSaveOtp(createdUser.id, 'EMAIL_VERIFICATION');
+    const { passwordHash: _, ...userWithoutSensitiveData } = createdUser;
+    
+    return { user: userWithoutSensitiveData, rawOtp };
+};
+
+const verifyOtp = async ({ email, otp }) => {
+    if (!email || !otp) {
+        throw new APIError("Email and OTP are required", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    if (user.isEmailVerified) {
+        throw new APIError("Email is already verified", 400);
+    }
+
+    await verifyAndConsumeOtp(user.id, 'EMAIL_VERIFICATION', otp);
+
+
+    const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            isEmailVerified: true
+        },
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            isEmailVerified: true,
+            status: true,
+            role: true
+        }
+    });
+
+    return updatedUser;
+};
+
+const resendOtp = async (email) => {
+    if (!email) {
+        throw new APIError("Email is required", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    if (user.isEmailVerified) {
+        throw new APIError("Email is already verified", 400);
+    }
+
+    const rawOtp = await generateAndSaveOtp(user.id, 'EMAIL_VERIFICATION');
+
+    return { email: user.email, rawOtp, fullName: user.fullName };
+};
+
+const signIn = async (data) => {
+    const { email, password } = data;
+    const user = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
+
+    if (!user) {
+        throw new APIError("Invalid email or password", 401);
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordMatched) {
+        throw new APIError("Invalid email or password", 401);
+    }
+
+    const payload = {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        status: user.status
+    };
+
+    const token = await jwtSign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const { passwordHash: _, ...userWithoutPassword } = user;
+
+    return { token, user: userWithoutPassword };
+};
+
+const getAllUsers = async (query) => {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const count = await prisma.user.count();
+    const NumOfPages = Math.ceil(count / limit);
+
+    if (page <= NumOfPages || count === 0) {
+        const users = await prisma.user.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                phone: true,
+                nationalId: true,
+                jobTitle: true,
+                role: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+        return { users, count, NumOfPages, message: "Users fetched successfully" };
+    } else {
+        return { users: [], count, NumOfPages, message: "You have reached the last page, there are no more users to fetch" };
+    }
+};
+
+const getUserById = async (id) => {
+    const user = await prisma.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            phone: true,
+            nationalId: true,
+            jobTitle: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    return user;
+};
+
+const updateUserById = async (id, updateData) => {
+    // Prevent direct password updates through general update endpoint
+    if (updateData.password) {
+        delete updateData.password;
+    }
+    if (updateData.email) {
+        delete updateData.email;
+    }
+
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: updateData,
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                phone: true,
+                nationalId: true,
+                jobTitle: true,
+                role: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+
+        return updatedUser;
+    } catch (error) {
+        if (error.code === 'P2025') {
+            throw new APIError("User not found", 404);
+        }
+        throw error;
+    }
+};
+
+const deleteUserById = async (id) => {
+    try {
+        await prisma.user.delete({
+            where: { id }
+        });
+        return { message: "User deleted successfully" };
+    } catch (error) {
+        if (error.code === 'P2025') {
+            throw new APIError("User not found", 404);
+        }
+        throw error;
+    }
+};
+
+const searchUsers = async (query) => {
+    const { searchTerm, page: reqPage, limit: reqLimit } = query;
+
+    if (!searchTerm || !searchTerm.trim()) {
+        throw new APIError("Search term query parameter is required", 400);
+    }
+
+    const page = Number(reqPage) || 1;
+    const limit = Number(reqLimit) || 10;
+    const cleanSearch = searchTerm.trim();
+
+    const searchCondition = {
+        OR: [
+            { fullName: { contains: cleanSearch, mode: 'insensitive' } },
+            { email: { contains: cleanSearch, mode: 'insensitive' } }
+        ]
+    };
+
+    const count = await prisma.user.count({ where: searchCondition });
+    const NumOfPages = Math.ceil(count / limit);
+
+    const users = await prisma.user.findMany({
+        where: searchCondition,
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            phone: true,
+            nationalId: true,
+            jobTitle: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    return { users, count, NumOfPages, message: "Users search completed" };
+};
+
+module.exports = {
+    signUp,
+    signIn,
+    getAllUsers,
+    getUserById,
+    updateUserById,
+    deleteUserById,
+    searchUsers,
+    verifyOtp,
+    resendOtp
+};
