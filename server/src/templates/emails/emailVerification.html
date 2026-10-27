@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email verification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: right;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            background-color: #1a73e8;
+            color: #ffffff;
+            padding: 25px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .body-content {
+            padding: 30px 25px;
+            line-height: 1.6;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222222;
+            margin-bottom: 15px;
+        }
+        .instruction {
+            font-size: 15px;
+            color: #555555;
+            margin-bottom: 25px;
+        }
+        .otp-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .otp-code {
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            color: #1a73e8;
+            background-color: #e8f0fe;
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: 1px dashed #1a73e8;
+            direction: ltr;
+        }
+        .expiry-warning {
+            font-size: 13px;
+            color: #e53935;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 25px 0;
+        }
+        .footer {
+            background-color: #f9fbfd;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888888;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Verify your email</h1>
+        </div>
+
+        <!-- Body Content -->
+        <div class="body-content">
+            <div class="greeting">Welcome {{fullName}}،</div>
+            
+            <p class="instruction">
+            Thank you for registering with us! To complete your account setup, please use the following verification code (OTP) to confirm your email address:            </p>
+
+            <!-- OTP Display -->
+            <div class="otp-container">
+                <div class="otp-code">{{otp}}</div>
+                <div class="expiry-warning">⏰ This code is valid for only 10 minutes.</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p style="font-size: 13px; color: #777777;">
+               If you did not make this request yourself, you can safely ignore this email; the account will not be activated without this code.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>All rights reserved &copy; 2026</p>
+            <p>This email was sent automatically; please do not reply to this message.</p>
+        </div>
+    </div>
+</body>
+</html>

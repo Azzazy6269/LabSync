@@ -6,6 +6,8 @@ const router = express.Router();
 
 // Auth routes
 router.post('/signup', usersController.signUp);
+router.post('/verify-otp', usersController.verifyOtp);
+router.post('/resend-otp', usersController.resendOtp);
 router.post('/signIn', usersController.signIn);
 
 router.get('/search', usersController.searchUsers);
@@ -13,7 +15,7 @@ router.get('/', usersController.getAllUsers);
 
 
 router.get('/:id', usersController.getUserById);
-router.put('/:id', usersController.updateUserById);
+router.patch('/:id', usersController.updateUserById);
 router.delete('/:id', usersController.deleteUserById);
 
 module.exports = router;

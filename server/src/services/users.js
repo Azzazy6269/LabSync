@@ -5,58 +5,171 @@ const bcrypt = require('bcrypt');
 const APIError = require('../../utils/APIError');
 const jwtSign = util.promisify(jwt.sign);
 
-const signUp = async (userData)=>{
-    const {email, fullName, phone, nationalId, jobTitle, role, password} = userData;
+const signUp = async (userData) => {
+    const { email, fullName, phone, nationalId, jobTitle, role, password } = userData;
 
-    const existingUser = await prisma.user.findUnique({
-        where: {
-            email: email
-        }
-    });
-    if(existingUser){
-        throw new APIError("user is already exist",400);
+    const existingVerifiedEmail = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
+    if (existingVerifiedEmail) {
+        throw new APIError("User with the same email already exists", 400);
     }
 
-    const passwordHash = await bcrypt.hash(password,12);
-    const createdUser = await prisma.user.create({
-        data:{email, fullName, phone, nationalId, jobTitle, role, passwordHash}
-    });
-
-    const { passwordHash: _, ...userWithoutPassword } = createdUser;
-    return userWithoutPassword;
-}
-
-const signIn = async (data)=>{
-    const {email, password} = data;
-    const user = await prisma.user.findUnique({
-        where:{
-            email
-        }
-    })
-
-    if(!user){
-        throw new APIError("Invalid email or password",401);
+    const existingVerifiedNationalId = await prisma.user.findUnique({ where: { nationalId, isEmailVerified:true } });
+    if (existingVerifiedNationalId) {
+        throw new APIError("User with the same national ID already exists", 400);
     }
 
-    const isPasswordMatched = await bcrypt.compare(password,user.passwordHash);
-    if(!isPasswordMatched){
-        throw new APIError("Invalid email or password",401);
-    }  
+    const passwordHash = await bcrypt.hash(password, 12);
 
-    const payload = 
-        {
-         id:user.id,
-         email,
-         fullName:user.fullName, 
-         phone:user.phone, 
-         nationalId:user.nationalId, 
-         role:user.role
-        } 
+    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpHash = await bcrypt.hash(rawOtp, 10);
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Check if a user with the same email or national ID exists, regardless of verification status
+    const existingEmailOrNationalId = await prisma.user.findFirst({ where: {
+        OR: [
+            { email },
+            { nationalId }
+        ],
+        }
+     });
+    let createdUser;
+    if (existingEmailOrNationalId) {
+        createdUser = await prisma.user.update({
+            where: { id: existingEmailOrNationalId.id },
+            data: {
+                email,
+                fullName,
+                phone,
+                nationalId,
+                jobTitle,
+                role,
+                passwordHash,
+                otpHash,
+                otpExpiresAt,
+                createdAt: new Date()
+            }
+        });
+    }else{
+        createdUser = await prisma.user.create({
+            data: {
+                email,
+                fullName,
+                phone,
+                nationalId,
+                jobTitle,
+                role,
+                passwordHash,
+                otpHash,
+                otpExpiresAt
+            }
+        });
+    }
+
+    const { passwordHash: _, otpHash: __, ...userWithoutSensitiveData } = createdUser;
+    
+    return { user: userWithoutSensitiveData, rawOtp };
+};
+
+const verifyOtp = async ({ email, otp }) => {
+    if (!email || !otp) {
+        throw new APIError("Email and OTP are required", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    if (user.isEmailVerified) {
+        throw new APIError("Email is already verified", 400);
+    }
+
+    if (!user.otpHash || !user.otpExpiresAt) {
+        throw new APIError("No OTP found, please request a new one", 400);
+    }
+
+    if (new Date() > user.otpExpiresAt) {
+        throw new APIError("OTP has expired, please request a new one", 400);
+    }
+
+    const isOtpValid = await bcrypt.compare(otp, user.otpHash);
+    if (!isOtpValid) {
+        throw new APIError("Invalid OTP code", 400);
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            isEmailVerified: true,
+            otpHash: null,
+            otpExpiresAt: null
+        },
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            isEmailVerified: true,
+            status: true,
+            role: true
+        }
+    });
+
+    return updatedUser;
+};
+
+const resendOtp = async (email) => {
+    if (!email) {
+        throw new APIError("Email is required", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    if (user.isEmailVerified) {
+        throw new APIError("Email is already verified", 400);
+    }
+
+    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpHash = await bcrypt.hash(rawOtp, 10);
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { otpHash, otpExpiresAt }
+    });
+
+    return { email: user.email, rawOtp, fullName: user.fullName };
+};
+
+const signIn = async (data) => {
+    const { email, password } = data;
+    const user = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
+
+    if (!user) {
+        throw new APIError("Invalid email or password", 401);
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordMatched) {
+        throw new APIError("Invalid email or password", 401);
+    }
+
+    const payload = {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        status: user.status
+    };
+
     const token = await jwtSign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    const { passwordHash: _, ...userWithoutPassword } = user;
+    const { passwordHash: _, otpHash: __, ...userWithoutPassword } = user;
 
     return { token, user: userWithoutPassword };
-}
+};
 
 const getAllUsers = async (query) => {
     const page = Number(query.page) || 1;
@@ -113,6 +226,9 @@ const updateUserById = async (id, updateData) => {
     // Prevent direct password updates through general update endpoint
     if (updateData.password) {
         delete updateData.password;
+    }
+    if (updateData.email) {
+        delete updateData.email;
     }
 
     try {
@@ -203,5 +319,7 @@ module.exports = {
     getUserById,
     updateUserById,
     deleteUserById,
-    searchUsers
+    searchUsers,
+    verifyOtp,
+    resendOtp
 };

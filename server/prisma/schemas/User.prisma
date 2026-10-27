@@ -15,7 +15,12 @@ model User {
   // for future features
   metadata       Json?
 
-  
+  // verification data
+  isEmailVerified Boolean      @default(false)
+  otpHash       String?         
+  otpExpiresAt  DateTime?
+
+
   // Approval data
   approvedById   String?
   approvedBy     User?         @relation("AdminApprovals", fields: [approvedById], references: [id])
