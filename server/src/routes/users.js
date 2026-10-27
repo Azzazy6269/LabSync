@@ -12,12 +12,12 @@ router.post('/verify-otp', validate(schemas.verifyOtpSchema), usersController.ve
 router.post('/resend-otp', validate(schemas.resendOtpSchema), usersController.resendOtp);
 router.post('/signIn', validate(schemas.signInSchema), usersController.signIn);
 
-router.get('/search', usersController.searchUsers);
-router.get('/', usersController.getAllUsers);
+router.get('/search', validate(schemas.searchUsersSchema), usersController.searchUsers);
+router.get('/', validate(schemas.getAllUsersSchema), usersController.getAllUsers);
 
 
-router.get('/:id', usersController.getUserById);
-router.patch('/:id', usersController.updateUserById);
-router.delete('/:id', usersController.deleteUserById);
+router.get('/:id', validate(schemas.getUserByIdSchema), usersController.getUserById);
+router.patch('/:id', validate(schemas.updateUserByIdSchema) , usersController.updateUserById);
+router.delete('/:id', validate(schemas.deleteUserByIdSchema), usersController.deleteUserById);
 
 module.exports = router;
