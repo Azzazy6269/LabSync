@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const APIError = require('../../utils/APIError');
 const jwtSign = util.promisify(jwt.sign);
-
+const jwtVerify = util.promisify(jwt.verify);
 
 const MAX_OTP_ATTEMPTS = 5;
 
@@ -66,6 +66,57 @@ const verifyAndConsumeOtp = async (userId, purpose, rawOtp) => {
     return true;
 };
 
+// Helper: Generate Access and Refresh Tokens
+const generateTokens = async (payload) => {
+    const accessToken = await jwtSign(payload, process.env.JWT_SECRET, { 
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m' 
+    });
+    
+    const refreshToken = await jwtSign(
+        { id: payload.id }, 
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET, 
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+    );
+
+    return { accessToken, refreshToken };
+};
+
+const refreshToken = async (token) => {
+    try {
+        const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+        const decoded = await jwtVerify(token, secret);
+
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+        if (!user) {
+            throw new APIError("User not found", 401);
+        }
+
+        if (user.status === 'SUSPENDED') {
+            throw new APIError("Your account has been suspended", 403);
+        }
+
+        const payload = {
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+            status: user.status
+        };
+
+        const tokens = await generateTokens(payload);
+
+        return {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+        };
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+            throw new APIError("Invalid or expired refresh token", 401);
+        }
+        throw error;
+    }
+};
 
 const signUp = async (userData) => {
     const { email, fullName, phone, nationalId, jobTitle, role, password, repeatPassword } = userData;
@@ -185,7 +236,7 @@ const resendOtp = async (email) => {
 
 const signIn = async (data) => {
     const { email, password } = data;
-    const user = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
+    const user = await prisma.user.findUnique({ where: { email, isEmailVerified: true } });
 
     if (!user) {
         throw new APIError("Invalid email or password", 401);
@@ -205,10 +256,72 @@ const signIn = async (data) => {
         status: user.status
     };
 
-    const token = await jwtSign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const tokens = await generateTokens(payload);
     const { passwordHash: _, ...userWithoutPassword } = user;
 
-    return { token, user: userWithoutPassword };
+    return { 
+        token: tokens.accessToken, 
+        refreshToken: tokens.refreshToken, 
+        user: userWithoutPassword 
+    };
+};
+
+const changePassword = async (userId, { currentPassword, newPassword, repeatNewPassword }) => {
+    if (newPassword !== repeatNewPassword) {
+        throw new APIError("Passwords do not match", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.passwordHash) {
+        throw new APIError("User not found or uses OAuth authentication", 404);
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isMatch) {
+        throw new APIError("Incorrect current password", 400);
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { passwordHash: newPasswordHash }
+    });
+
+    return { message: "Password updated successfully" };
+};
+
+const forgotPassword = async (email) => {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        return { message: "If an account exists with this email, a password reset OTP has been sent." };
+    }
+
+    const rawOtp = await generateAndSaveOtp(user.id, 'PASSWORD_RESET');
+
+    return { email: user.email, rawOtp, fullName: user.fullName };
+};
+
+const resetPassword = async ({ email, otp, newPassword, repeatNewPassword }) => {
+    if (newPassword !== repeatNewPassword) {
+        throw new APIError("Passwords do not match", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        throw new APIError("Invalid request", 400);
+    }
+
+    await verifyAndConsumeOtp(user.id, 'PASSWORD_RESET', otp);
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash }
+    });
+
+    return { message: "Password reset successful. You can now log in with your new password." };
 };
 
 const getAllUsers = async (query) => {
@@ -352,6 +465,57 @@ const searchUsers = async (query) => {
     return { users, count, NumOfPages, message: "Users search completed" };
 };
 
+const getProfileData = async (userId) => {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            phone: true,
+            nationalId: true,
+            jobTitle: true,
+            role: true,
+            status: true,
+            isEmailVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    return user;
+};
+
+const editProfileData = async (userId, { fullName, phone, jobTitle }) => {
+    const updatePayload = {};
+    if (fullName !== undefined) updatePayload.fullName = fullName;
+    if (phone !== undefined) updatePayload.phone = phone;
+    if (jobTitle !== undefined) updatePayload.jobTitle = jobTitle;
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: updatePayload,
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            phone: true,
+            nationalId: true,
+            jobTitle: true,
+            role: true,
+            status: true,
+            isEmailVerified: true,
+            updatedAt: true
+        }
+    });
+
+    return updatedUser;
+};
+
 module.exports = {
     signUp,
     signIn,
@@ -361,5 +525,11 @@ module.exports = {
     deleteUserById,
     searchUsers,
     verifyOtp,
-    resendOtp
+    resendOtp,
+    changePassword,
+    forgotPassword,
+    resetPassword,
+    refreshToken,
+    getProfileData,
+    editProfileData
 };
