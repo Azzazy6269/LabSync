@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const APIError = require('../../utils/APIError');
 const jwtSign = util.promisify(jwt.sign);
-
+const jwtVerify = util.promisify(jwt.verify);
 
 const MAX_OTP_ATTEMPTS = 5;
 
@@ -66,7 +66,58 @@ const verifyAndConsumeOtp = async (userId, purpose, rawOtp) => {
     return true;
 };
 
+// Helper: Generate Access and Refresh Tokens
+const generateTokens = async (payload) => {
+    const accessToken = await jwtSign(payload, process.env.JWT_SECRET, { 
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m' 
+    });
+    
+    const refreshToken = await jwtSign(
+        { id: payload.id }, 
+        process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET, 
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+    );
 
+    return { accessToken, refreshToken };
+};
+
+
+const refreshToken = async (token) => {
+    try {
+        const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+        const decoded = await jwtVerify(token, secret);
+
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+        if (!user) {
+            throw new APIError("User not found", 401);
+        }
+
+        if (user.status === 'SUSPENDED') {
+            throw new APIError("Your account has been suspended", 403);
+        }
+
+        const payload = {
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+            status: user.status
+        };
+
+        const tokens = await generateTokens(payload);
+
+        return {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+        };
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+            throw new APIError("Invalid or expired refresh token", 401);
+        }
+        throw error;
+    }
+};
 const signUp = async (userData) => {
     const { email, fullName, phone, nationalId, jobTitle, role, password, repeatPassword } = userData;
 
@@ -185,7 +236,7 @@ const resendOtp = async (email) => {
 
 const signIn = async (data) => {
     const { email, password } = data;
-    const user = await prisma.user.findUnique({ where: { email, isEmailVerified:true } });
+    const user = await prisma.user.findUnique({ where: { email, isEmailVerified: true } });
 
     if (!user) {
         throw new APIError("Invalid email or password", 401);
@@ -205,10 +256,14 @@ const signIn = async (data) => {
         status: user.status
     };
 
-    const token = await jwtSign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const tokens = await generateTokens(payload);
     const { passwordHash: _, ...userWithoutPassword } = user;
 
-    return { token, user: userWithoutPassword };
+    return { 
+        token: tokens.accessToken, 
+        refreshToken: tokens.refreshToken, 
+        user: userWithoutPassword 
+    };
 };
 
 const changePassword = async (userId, { currentPassword, newPassword, repeatNewPassword }) => {
@@ -422,5 +477,6 @@ module.exports = {
     resendOtp,
     changePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    refreshToken
 };

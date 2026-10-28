@@ -17,7 +17,7 @@ const searchUsersSchema = require('./searchUsersSchema');
 const changePasswordSchema = require('./changePasswordSchema');
 const forgotPasswordSchema = require('./forgotPasswordSchema');
 const resetPasswordSchema = require('./resetPasswordSchema');
-
+const refreshTokenSchema = require('./refreshTokenSchema');
 
 module.exports = {
     signUpSchema,
@@ -31,5 +31,6 @@ module.exports = {
     searchUsersSchema,
     changePasswordSchema,
     forgotPasswordSchema,
-    resetPasswordSchema
+    resetPasswordSchema,
+    refreshTokenSchema
 };

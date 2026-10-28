@@ -15,7 +15,7 @@ router.post('/signIn', validate(schemas.signInSchema), usersController.signIn);
 router.post('/forgot-password', validate(schemas.forgotPasswordSchema), usersController.forgotPassword);
 router.post('/reset-password', validate(schemas.resetPasswordSchema), usersController.resetPassword);
 router.patch('/change-password', authenticate, validate(schemas.changePasswordSchema), usersController.changePassword);
-
+router.post('/refresh-token', validate(schemas.refreshTokenSchema), usersController.refreshToken);
 
 // CRUD
 router.get('/search', authenticate, restrictTo("ADMIN","SUPERVISOR","RESEARCHER"), validate(schemas.searchUsersSchema), usersController.searchUsers);

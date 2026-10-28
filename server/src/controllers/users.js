@@ -61,6 +61,18 @@ const signIn = async(req,res,next)=>{
     }
 }
 
+const refreshToken = async (req, res, next) => {
+    try {
+        const tokens = await usersService.refreshToken(req.body.refreshToken);
+        res.status(200).json({
+            message: "Token refreshed successfully",
+            data: tokens
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const changePassword = async (req, res, next) => {
     try {
         const response = await usersService.changePassword(req.user.id, req.body);
@@ -173,5 +185,6 @@ module.exports = {
     searchUsers,
     changePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    refreshToken
 };
