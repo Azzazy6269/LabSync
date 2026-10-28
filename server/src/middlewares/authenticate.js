@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const util = require('util');
-const prisma = require('../config/prisma');
-const APIError = require('../utils/APIError');
+const prisma = require('../../config/prisma');
+const APIError = require('../../utils/APIError');
 
 const jwtVerify = util.promisify(jwt.verify);
 

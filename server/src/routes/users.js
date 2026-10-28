@@ -2,7 +2,8 @@ const express = require("express");
 const validate = require("../middlewares/validate");
 const schemas = require("../schemas/users");
 const usersController = require('../controllers/users');
-
+const {authenticate} = require('../middlewares/authenticate');
+const {restrictTo} = require('../middlewares/restrictTo');
 
 const router = express.Router();
 
@@ -12,12 +13,12 @@ router.post('/verify-otp', validate(schemas.verifyOtpSchema), usersController.ve
 router.post('/resend-otp', validate(schemas.resendOtpSchema), usersController.resendOtp);
 router.post('/signIn', validate(schemas.signInSchema), usersController.signIn);
 
-router.get('/search', validate(schemas.searchUsersSchema), usersController.searchUsers);
-router.get('/', validate(schemas.getAllUsersSchema), usersController.getAllUsers);
+router.get('/search', authenticate, restrictTo("ADMIN","SUPERVISOR","RESEARCHER"), validate(schemas.searchUsersSchema), usersController.searchUsers);
+router.get('/', authenticate, restrictTo("ADMIN"), validate(schemas.getAllUsersSchema), usersController.getAllUsers);
 
 
-router.get('/:id', validate(schemas.getUserByIdSchema), usersController.getUserById);
-router.patch('/:id', validate(schemas.updateUserByIdSchema) , usersController.updateUserById);
-router.delete('/:id', validate(schemas.deleteUserByIdSchema), usersController.deleteUserById);
+router.get('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.getUserByIdSchema), usersController.getUserById);
+router.patch('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.updateUserByIdSchema) , usersController.updateUserById);
+router.delete('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.deleteUserByIdSchema), usersController.deleteUserById);
 
 module.exports = router;
