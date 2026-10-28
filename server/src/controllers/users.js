@@ -171,7 +171,29 @@ const searchUsers = async (req, res, next) => {
     }
 };
 
+const getProfileData = async (req, res, next) => {
+    try {
+        const user = await usersService.getProfileData(req.user.id);
+        res.status(200).json({
+            message: "Profile retrieved successfully",
+            data: { user }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
+const editProfileData = async (req, res, next) => {
+    try {
+        const user = await usersService.editProfileData(req.user.id, req.body);
+        res.status(200).json({
+            message: "Profile updated successfully",
+            data: { user }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 module.exports = {
     signUp,
@@ -186,5 +208,7 @@ module.exports = {
     changePassword,
     forgotPassword,
     resetPassword,
-    refreshToken
+    refreshToken,
+    getProfileData,
+    editProfileData
 };

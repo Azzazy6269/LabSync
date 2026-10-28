@@ -18,6 +18,8 @@ const changePasswordSchema = require('./changePasswordSchema');
 const forgotPasswordSchema = require('./forgotPasswordSchema');
 const resetPasswordSchema = require('./resetPasswordSchema');
 const refreshTokenSchema = require('./refreshTokenSchema');
+const updateProfileSchema = require('./updateProfileSchema');
+
 
 module.exports = {
     signUpSchema,
@@ -32,5 +34,6 @@ module.exports = {
     changePasswordSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
-    refreshTokenSchema
+    refreshTokenSchema,
+    updateProfileSchema
 };

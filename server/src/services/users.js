@@ -81,7 +81,6 @@ const generateTokens = async (payload) => {
     return { accessToken, refreshToken };
 };
 
-
 const refreshToken = async (token) => {
     try {
         const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
@@ -118,6 +117,7 @@ const refreshToken = async (token) => {
         throw error;
     }
 };
+
 const signUp = async (userData) => {
     const { email, fullName, phone, nationalId, jobTitle, role, password, repeatPassword } = userData;
 
@@ -465,6 +465,57 @@ const searchUsers = async (query) => {
     return { users, count, NumOfPages, message: "Users search completed" };
 };
 
+const getProfileData = async (userId) => {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            phone: true,
+            nationalId: true,
+            jobTitle: true,
+            role: true,
+            status: true,
+            isEmailVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    if (!user) {
+        throw new APIError("User not found", 404);
+    }
+
+    return user;
+};
+
+const editProfileData = async (userId, { fullName, phone, jobTitle }) => {
+    const updatePayload = {};
+    if (fullName !== undefined) updatePayload.fullName = fullName;
+    if (phone !== undefined) updatePayload.phone = phone;
+    if (jobTitle !== undefined) updatePayload.jobTitle = jobTitle;
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: updatePayload,
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            phone: true,
+            nationalId: true,
+            jobTitle: true,
+            role: true,
+            status: true,
+            isEmailVerified: true,
+            updatedAt: true
+        }
+    });
+
+    return updatedUser;
+};
+
 module.exports = {
     signUp,
     signIn,
@@ -478,5 +529,7 @@ module.exports = {
     changePassword,
     forgotPassword,
     resetPassword,
-    refreshToken
+    refreshToken,
+    getProfileData,
+    editProfileData
 };

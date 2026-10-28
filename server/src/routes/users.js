@@ -20,8 +20,11 @@ router.post('/refresh-token', validate(schemas.refreshTokenSchema), usersControl
 // CRUD
 router.get('/search', authenticate, restrictTo("ADMIN","SUPERVISOR","RESEARCHER"), validate(schemas.searchUsersSchema), usersController.searchUsers);
 router.get('/', authenticate, restrictTo("ADMIN"), validate(schemas.getAllUsersSchema), usersController.getAllUsers);
+router.get('/me',authenticate, usersController.getProfileData);
+router.patch('/me',authenticate, validate(schemas.updateProfileSchema), usersController.editProfileData);
 router.get('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.getUserByIdSchema), usersController.getUserById);
 router.patch('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.updateUserByIdSchema) , usersController.updateUserById);
 router.delete('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.deleteUserByIdSchema), usersController.deleteUserById);
+
 
 module.exports = router;
