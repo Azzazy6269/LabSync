@@ -61,6 +61,45 @@ const signIn = async(req,res,next)=>{
     }
 }
 
+const changePassword = async (req, res, next) => {
+    try {
+        const response = await usersService.changePassword(req.user.id, req.body);
+        res.status(200).json({ message: response.message });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const forgotPassword = async (req, res, next) => {
+    try {
+        const { email, rawOtp, fullName } = await usersService.forgotPassword(req.body.email);
+
+        if (rawOtp) {
+            await emailService.sendEmail(
+                email,
+                "Password Reset OTP",
+                "passwordReset",
+                { otp: rawOtp, fullName }
+            );
+        }
+
+        res.status(200).json({
+            message: "If an account exists with this email, a password reset OTP has been sent."
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const resetPassword = async (req, res, next) => {
+    try {
+        const response = await usersService.resetPassword(req.body);
+        res.status(200).json({ message: response.message });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const getAllUsers = async (req, res, next) => {
     try {
         const response = await usersService.getAllUsers(req.query);
@@ -120,6 +159,8 @@ const searchUsers = async (req, res, next) => {
     }
 };
 
+
+
 module.exports = {
     signUp,
     verifyOtp,
@@ -129,5 +170,8 @@ module.exports = {
     getUserById,
     updateUserById,
     deleteUserById,
-    searchUsers
+    searchUsers,
+    changePassword,
+    forgotPassword,
+    resetPassword
 };

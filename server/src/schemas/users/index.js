@@ -14,6 +14,10 @@ const getUserByIdSchema = require('./getUserByIdSchema');
 const updateUserByIdSchema = require('./updateUserByIdSchema');
 const deleteUserByIdSchema = require('./deleteUserByIdSchema');
 const searchUsersSchema = require('./searchUsersSchema');
+const changePasswordSchema = require('./changePasswordSchema');
+const forgotPasswordSchema = require('./forgotPasswordSchema');
+const resetPasswordSchema = require('./resetPasswordSchema');
+
 
 module.exports = {
     signUpSchema,
@@ -24,5 +28,8 @@ module.exports = {
     getUserByIdSchema,
     updateUserByIdSchema,
     deleteUserByIdSchema,
-    searchUsersSchema
+    searchUsersSchema,
+    changePasswordSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema
 };

@@ -211,6 +211,64 @@ const signIn = async (data) => {
     return { token, user: userWithoutPassword };
 };
 
+const changePassword = async (userId, { currentPassword, newPassword, repeatNewPassword }) => {
+    if (newPassword !== repeatNewPassword) {
+        throw new APIError("Passwords do not match", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.passwordHash) {
+        throw new APIError("User not found or uses OAuth authentication", 404);
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isMatch) {
+        throw new APIError("Incorrect current password", 400);
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { passwordHash: newPasswordHash }
+    });
+
+    return { message: "Password updated successfully" };
+};
+
+const forgotPassword = async (email) => {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        return { message: "If an account exists with this email, a password reset OTP has been sent." };
+    }
+
+    const rawOtp = await generateAndSaveOtp(user.id, 'PASSWORD_RESET');
+
+    return { email: user.email, rawOtp, fullName: user.fullName };
+};
+
+const resetPassword = async ({ email, otp, newPassword, repeatNewPassword }) => {
+    if (newPassword !== repeatNewPassword) {
+        throw new APIError("Passwords do not match", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        throw new APIError("Invalid request", 400);
+    }
+
+    await verifyAndConsumeOtp(user.id, 'PASSWORD_RESET', otp);
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash }
+    });
+
+    return { message: "Password reset successful. You can now log in with your new password." };
+};
+
 const getAllUsers = async (query) => {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -361,5 +419,8 @@ module.exports = {
     deleteUserById,
     searchUsers,
     verifyOtp,
-    resendOtp
+    resendOtp,
+    changePassword,
+    forgotPassword,
+    resetPassword
 };
