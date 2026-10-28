@@ -137,7 +137,6 @@ const signUp = async (userData) => {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Check if a user with the same email or national ID exists, regardless of verification status
     const existingEmailOrNationalId = await prisma.user.findFirst({ where: {
         OR: [
             { email },
@@ -376,13 +375,9 @@ const getUserById = async (id) => {
 };
 
 const updateUserById = async (id, updateData) => {
-    // Prevent direct password updates through general update endpoint
-    if (updateData.password) {
-        delete updateData.password;
-    }
-    if (updateData.email) {
-        delete updateData.email;
-    }
+    delete updateData.password;
+    delete updateData.passwordHash;
+    delete updateData.email;
 
     try {
         const updatedUser = await prisma.user.update({
@@ -396,6 +391,9 @@ const updateUserById = async (id, updateData) => {
                 nationalId: true,
                 jobTitle: true,
                 role: true,
+                status: true,
+                approvedById: true,
+                isEmailVerified: true,
                 createdAt: true,
                 updatedAt: true
             }
@@ -490,31 +488,6 @@ const getProfileData = async (userId) => {
     return user;
 };
 
-const editProfileData = async (userId, { fullName, phone, jobTitle }) => {
-    const updatePayload = {};
-    if (fullName !== undefined) updatePayload.fullName = fullName;
-    if (phone !== undefined) updatePayload.phone = phone;
-    if (jobTitle !== undefined) updatePayload.jobTitle = jobTitle;
-
-    const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: updatePayload,
-        select: {
-            id: true,
-            email: true,
-            fullName: true,
-            phone: true,
-            nationalId: true,
-            jobTitle: true,
-            role: true,
-            status: true,
-            isEmailVerified: true,
-            updatedAt: true
-        }
-    });
-
-    return updatedUser;
-};
 
 module.exports = {
     signUp,
@@ -530,6 +503,5 @@ module.exports = {
     forgotPassword,
     resetPassword,
     refreshToken,
-    getProfileData,
-    editProfileData
+    getProfileData
 };

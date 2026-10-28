@@ -137,15 +137,6 @@ const getUserById = async (req, res, next) => {
     }
 };
 
-const updateUserById = async (req, res, next) => {
-    try {
-        const user = await usersService.updateUserById(req.params.id, req.body);
-        res.status(200).json({ message: "User updated successfully", data: { user } });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const deleteUserById = async (req, res, next) => {
     try {
         const response = await usersService.deleteUserById(req.params.id);
@@ -183,11 +174,43 @@ const getProfileData = async (req, res, next) => {
     }
 };
 
+const updateUserById = async (req, res, next) => {
+    try {
+        const user = await usersService.updateUserById(req.params.id, req.body);
+        res.status(200).json({ 
+            message: "User updated successfully", 
+            data: { user } 
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const editProfileData = async (req, res, next) => {
     try {
-        const user = await usersService.editProfileData(req.user.id, req.body);
+        const user = await usersService.updateUserById(req.user.id, req.body);
         res.status(200).json({
             message: "Profile updated successfully",
+            data: { user }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateUserStatus = async (req, res, next) => {
+    try {
+        const { status } = req.body;
+
+        const updatePayload = {
+            status,
+            ...(status === 'APPROVED' && { approvedById: req.user.id })
+        };
+
+        const user = await usersService.updateUserById(req.params.id, updatePayload);
+
+        res.status(200).json({
+            message: `User status successfully changed to ${status}`,
             data: { user }
         });
     } catch (error) {
@@ -210,5 +233,6 @@ module.exports = {
     resetPassword,
     refreshToken,
     getProfileData,
-    editProfileData
+    editProfileData,
+    updateUserStatus
 };
