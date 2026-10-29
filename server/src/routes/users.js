@@ -25,6 +25,7 @@ router.patch('/me',authenticate, validate(schemas.updateProfileSchema), usersCon
 router.get('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.getUserByIdSchema), usersController.getUserById);
 router.patch('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.updateUserByIdSchema) , usersController.updateUserById);
 router.delete('/:id', authenticate, restrictTo("ADMIN"), validate(schemas.deleteUserByIdSchema), usersController.deleteUserById);
-
+router.patch('/:id/status', authenticate, restrictTo('ADMIN'), validate(schemas.updateUserStatusSchema), usersController.updateUserStatus
+);
 
 module.exports = router;
