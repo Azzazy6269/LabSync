@@ -1,9 +1,9 @@
-const usersService = require("../services/users");
+const authService = require("../services/auth");
 const emailService = require("../services/email");
 
 const signUp = async (req, res, next) => {
     try {
-        const { user, rawOtp } = await usersService.signUp(req.body);
+        const { user, rawOtp } = await authService.signUp(req.body);
         
         await emailService.sendEmail(
             user.email,
@@ -23,7 +23,7 @@ const signUp = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
     try {
-        const user = await usersService.verifyOtp(req.body);
+        const user = await authService.verifyOtp(req.body);
         res.status(200).json({
             message: "Email verified successfully",
             data: { user }
@@ -35,7 +35,7 @@ const verifyOtp = async (req, res, next) => {
 
 const resendOtp = async (req, res, next) => {
     try {
-        const { email, rawOtp, fullName } = await usersService.resendOtp(req.body.email);
+        const { email, rawOtp, fullName } = await authService.resendOtp(req.body.email);
         
         await emailService.sendEmail(
             email,
@@ -54,7 +54,7 @@ const resendOtp = async (req, res, next) => {
 
 const signIn = async(req,res,next)=>{
     try {
-        const user = await usersService.signIn(req.body);
+        const user = await authService.signIn(req.body);
         res.status(201).json({ message: "User Logged In successfully", data: {user} })
     } catch (error) {
         next(error);
@@ -63,7 +63,7 @@ const signIn = async(req,res,next)=>{
 
 const refreshToken = async (req, res, next) => {
     try {
-        const tokens = await usersService.refreshToken(req.body.refreshToken);
+        const tokens = await authService.refreshToken(req.body.refreshToken);
         res.status(200).json({
             message: "Token refreshed successfully",
             data: tokens
@@ -75,7 +75,7 @@ const refreshToken = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
     try {
-        const response = await usersService.changePassword(req.user.id, req.body);
+        const response = await authService.changePassword(req.user.id, req.body);
         res.status(200).json({ message: response.message });
     } catch (error) {
         next(error);
@@ -84,7 +84,7 @@ const changePassword = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
     try {
-        const { email, rawOtp, fullName } = await usersService.forgotPassword(req.body.email);
+        const { email, rawOtp, fullName } = await authService.forgotPassword(req.body.email);
 
         if (rawOtp) {
             await emailService.sendEmail(
@@ -105,7 +105,7 @@ const forgotPassword = async (req, res, next) => {
 
 const resetPassword = async (req, res, next) => {
     try {
-        const response = await usersService.resetPassword(req.body);
+        const response = await authService.resetPassword(req.body);
         res.status(200).json({ message: response.message });
     } catch (error) {
         next(error);
@@ -114,7 +114,7 @@ const resetPassword = async (req, res, next) => {
 
 const getAllUsers = async (req, res, next) => {
     try {
-        const response = await usersService.getAllUsers(req.query);
+        const response = await authService.getAllUsers(req.query);
         res.status(200).json({ 
             message: response.message, 
             data: { 
@@ -130,7 +130,7 @@ const getAllUsers = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
     try {
-        const user = await usersService.getUserById(req.params.id);
+        const user = await authService.getUserById(req.params.id);
         res.status(200).json({ message: "User details retrieved successfully", data: { user } });
     } catch (error) {
         next(error);
@@ -139,7 +139,7 @@ const getUserById = async (req, res, next) => {
 
 const deleteUserById = async (req, res, next) => {
     try {
-        const response = await usersService.deleteUserById(req.params.id);
+        const response = await authService.deleteUserById(req.params.id);
         res.status(200).json({ message: response.message });
     } catch (error) {
         next(error);
@@ -148,7 +148,7 @@ const deleteUserById = async (req, res, next) => {
 
 const searchUsers = async (req, res, next) => {
     try {
-        const response = await usersService.searchUsers(req.query);
+        const response = await authService.searchUsers(req.query);
         res.status(200).json({ 
             message: response.message, 
             data: { 
@@ -164,7 +164,7 @@ const searchUsers = async (req, res, next) => {
 
 const getProfileData = async (req, res, next) => {
     try {
-        const user = await usersService.getProfileData(req.user.id);
+        const user = await authService.getProfileData(req.user.id);
         res.status(200).json({
             message: "Profile retrieved successfully",
             data: { user }
@@ -176,7 +176,7 @@ const getProfileData = async (req, res, next) => {
 
 const updateUserById = async (req, res, next) => {
     try {
-        const user = await usersService.updateUserById(req.params.id, req.body);
+        const user = await authService.updateUserById(req.params.id, req.body);
         res.status(200).json({ 
             message: "User updated successfully", 
             data: { user } 
@@ -188,7 +188,7 @@ const updateUserById = async (req, res, next) => {
 
 const editProfileData = async (req, res, next) => {
     try {
-        const user = await usersService.updateUserById(req.user.id, req.body);
+        const user = await authService.updateUserById(req.user.id, req.body);
         res.status(200).json({
             message: "Profile updated successfully",
             data: { user }
@@ -207,7 +207,7 @@ const updateUserStatus = async (req, res, next) => {
             ...(status === 'APPROVED' && { approvedById: req.user.id })
         };
 
-        const user = await usersService.updateUserById(req.params.id, updatePayload);
+        const user = await authService.updateUserById(req.params.id, updatePayload);
 
         res.status(200).json({
             message: `User status successfully changed to ${status}`,

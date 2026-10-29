@@ -6,7 +6,7 @@ const { xss } = require('express-xss-sanitizer');
 const hpp = require('hpp');
 const limiter = require('./middlewares/rateLimiter');
 const errorHandler = require('./middlewares/errorHandler');
-const UserRoutes = require('./routes/users');
+const AuthRoutes = require('./routes/auth');
 
 
 const app = express();
@@ -30,7 +30,7 @@ app.use(limiter);
 
 
 // Routers
-app.use('/users', UserRoutes);
+app.use('/auth', AuthRoutes);
 app.use(errorHandler);
 
 
