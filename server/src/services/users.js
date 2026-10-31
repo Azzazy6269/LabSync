@@ -3,13 +3,32 @@ const APIError = require('../../utils/APIError');
 
 
 const getAllUsers = async (query) => {
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
-    const count = await prisma.user.count();
-    const NumOfPages = Math.ceil(count / limit);
+    const page = Math.max(1, Number(query.page) || 1);
+    const limit = Math.max(1, Number(query.limit) || 10);
+    const { role, status, searchTerm } = query;
 
-    if (page <= NumOfPages || count === 0) {
-        const users = await prisma.user.findMany({
+    const where = {};
+
+    if (role) {
+        where.role = role;
+    }
+
+    if (status) {
+        where.status = status;
+    }
+
+    if (searchTerm && searchTerm.trim()) {
+        const cleanSearch = searchTerm.trim();
+        where.OR = [
+            { fullName: { contains: cleanSearch, mode: 'insensitive' } },
+            { email: { contains: cleanSearch, mode: 'insensitive' } }
+        ];
+    }
+
+    const [count, users] = await Promise.all([
+        prisma.user.count({ where }),
+        prisma.user.findMany({
+            where,
             skip: (page - 1) * limit,
             take: limit,
             select: {
@@ -20,14 +39,23 @@ const getAllUsers = async (query) => {
                 nationalId: true,
                 jobTitle: true,
                 role: true,
+                status: true,
                 createdAt: true,
                 updatedAt: true
-            }
-        });
-        return { users, count, NumOfPages, message: "Users fetched successfully" };
-    } else {
-        return { users: [], count, NumOfPages, message: "You have reached the last page, there are no more users to fetch" };
-    }
+            },
+            orderBy: { createdAt: 'desc' }
+        })
+    ]);
+
+    const NumOfPages = Math.ceil(count / limit) || 1;
+
+    return {
+        users,
+        count,
+        NumOfPages,
+        currentPage: page,
+        message: "Users fetched successfully"
+    };
 };
 
 const getUserById = async (id) => {
@@ -65,47 +93,6 @@ const deleteUserById = async (id) => {
         }
         throw error;
     }
-};
-
-const searchUsers = async (query) => {
-    const { searchTerm, page: reqPage, limit: reqLimit } = query;
-
-    if (!searchTerm || !searchTerm.trim()) {
-        throw new APIError("Search term query parameter is required", 400);
-    }
-
-    const page = Number(reqPage) || 1;
-    const limit = Number(reqLimit) || 10;
-    const cleanSearch = searchTerm.trim();
-
-    const searchCondition = {
-        OR: [
-            { fullName: { contains: cleanSearch, mode: 'insensitive' } },
-            { email: { contains: cleanSearch, mode: 'insensitive' } }
-        ]
-    };
-
-    const count = await prisma.user.count({ where: searchCondition });
-    const NumOfPages = Math.ceil(count / limit);
-
-    const users = await prisma.user.findMany({
-        where: searchCondition,
-        skip: (page - 1) * limit,
-        take: limit,
-        select: {
-            id: true,
-            email: true,
-            fullName: true,
-            phone: true,
-            nationalId: true,
-            jobTitle: true,
-            role: true,
-            createdAt: true,
-            updatedAt: true
-        }
-    });
-
-    return { users, count, NumOfPages, message: "Users search completed" };
 };
 
 const updateUserById = async (id, updateData) => {
@@ -147,6 +134,5 @@ module.exports = {
     getAllUsers,
     getUserById,
     updateUserById,
-    deleteUserById,
-    searchUsers
+    deleteUserById
 };
