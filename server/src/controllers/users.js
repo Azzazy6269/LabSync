@@ -34,22 +34,6 @@ const deleteUserById = async (req, res, next) => {
     }
 };
 
-const searchUsers = async (req, res, next) => {
-    try {
-        const response = await usersService.searchUsers(req.query);
-        res.status(200).json({ 
-            message: response.message, 
-            data: { 
-                users: response.users, 
-                count: response.count, 
-                NumOfPages: response.NumOfPages 
-            } 
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const updateUserStatus = async (req, res, next) => {
     try {
         const { status } = req.body;
@@ -86,7 +70,6 @@ module.exports = {
     getAllUsers,
     getUserById,
     deleteUserById,
-    searchUsers,
     updateUserById,
     updateUserStatus
 };

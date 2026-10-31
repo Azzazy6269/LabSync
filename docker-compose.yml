@@ -34,6 +34,7 @@ services:
       dockerfile: Dockerfile
     container_name: labsync_server
     restart: always
+    command: sh -c "npm install && npm run dev"
     ports:
       - "1234:1234"
     environment:
