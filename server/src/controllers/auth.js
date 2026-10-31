@@ -112,74 +112,12 @@ const resetPassword = async (req, res, next) => {
     }
 };
 
-const getAllUsers = async (req, res, next) => {
-    try {
-        const response = await authService.getAllUsers(req.query);
-        res.status(200).json({ 
-            message: response.message, 
-            data: { 
-                users: response.users, 
-                count: response.count, 
-                NumOfPages: response.NumOfPages 
-            } 
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getUserById = async (req, res, next) => {
-    try {
-        const user = await authService.getUserById(req.params.id);
-        res.status(200).json({ message: "User details retrieved successfully", data: { user } });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const deleteUserById = async (req, res, next) => {
-    try {
-        const response = await authService.deleteUserById(req.params.id);
-        res.status(200).json({ message: response.message });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const searchUsers = async (req, res, next) => {
-    try {
-        const response = await authService.searchUsers(req.query);
-        res.status(200).json({ 
-            message: response.message, 
-            data: { 
-                users: response.users, 
-                count: response.count, 
-                NumOfPages: response.NumOfPages 
-            } 
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const getProfileData = async (req, res, next) => {
     try {
         const user = await authService.getProfileData(req.user.id);
         res.status(200).json({
             message: "Profile retrieved successfully",
             data: { user }
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const updateUserById = async (req, res, next) => {
-    try {
-        const user = await authService.updateUserById(req.params.id, req.body);
-        res.status(200).json({ 
-            message: "User updated successfully", 
-            data: { user } 
         });
     } catch (error) {
         next(error);
@@ -198,41 +136,17 @@ const editProfileData = async (req, res, next) => {
     }
 };
 
-const updateUserStatus = async (req, res, next) => {
-    try {
-        const { status } = req.body;
 
-        const updatePayload = {
-            status,
-            ...(status === 'APPROVED' && { approvedById: req.user.id })
-        };
-
-        const user = await authService.updateUserById(req.params.id, updatePayload);
-
-        res.status(200).json({
-            message: `User status successfully changed to ${status}`,
-            data: { user }
-        });
-    } catch (error) {
-        next(error);
-    }
-};
 
 module.exports = {
     signUp,
     verifyOtp,
     resendOtp,
     signIn,
-    getAllUsers,
-    getUserById,
-    updateUserById,
-    deleteUserById,
-    searchUsers,
+    editProfileData,
     changePassword,
     forgotPassword,
     resetPassword,
     refreshToken,
-    getProfileData,
-    editProfileData,
-    updateUserStatus
+    getProfileData
 };

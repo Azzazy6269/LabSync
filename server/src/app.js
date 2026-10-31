@@ -7,6 +7,7 @@ const hpp = require('hpp');
 const limiter = require('./middlewares/rateLimiter');
 const errorHandler = require('./middlewares/errorHandler');
 const AuthRoutes = require('./routes/auth');
+const UsersRoutes = require('./routes/users');
 
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(limiter);
 
 // Routers
 app.use('/auth', AuthRoutes);
+app.use('/users', UsersRoutes);
 app.use(errorHandler);
 
 
