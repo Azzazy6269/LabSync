@@ -1,0 +1,341 @@
+{
+  "info": {
+    "_postman_id": "1eec2a84-8f17-4295-9b2d-2500e6244024",
+    "name": "auth",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51603291"
+  },
+  "item": [
+    {
+      "name": "signUp",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\",\r\n  \"fullName\":\"mohamed ibrahim\",\r\n  \"phone\":\"01123856269\",\r\n  \"nationalId\": \"30301091302956\", \r\n  \"jobTitle\": \"unemployed\", \r\n  \"password\":\"Password123\",\r\n  \"repeatPassword\":\"Password123\"\r\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/signUp",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "signUp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "signIn",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\",\r\n  \"password\":\"Password123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/signIn",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "signIn"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "resendOTP",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/resend-otp",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "resend-otp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "verify-otp",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\",\r\n  \"otp\":\"369349\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/verify-otp",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "verify-otp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "changePassword",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltIiwicm9sZSI6IlJFU0VBUkNIRVIiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IlBFTkRJTkdfQURNSU5fQVBQUk9WQUwiLCJpYXQiOjE3OTMxOTkzOTYsImV4cCI6MTc5MzIwMjk5Nn0.cPK9kyE_F3XzOBG-vQuZsBxwt1VVeiPyxeNq1TD_fLE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"currentPassword\":\"modernPass123\",\r\n  \"newPassword\": \"Password123\",\r\n  \"repeatNewPassword\":\"Password123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/change-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "change-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "forgotPassword",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltIiwicm9sZSI6IlJFU0VBUkNIRVIiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IlBFTkRJTkdfQURNSU5fQVBQUk9WQUwiLCJpYXQiOjE3OTMxOTkzOTYsImV4cCI6MTc5MzIwMjk5Nn0.cPK9kyE_F3XzOBG-vQuZsBxwt1VVeiPyxeNq1TD_fLE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/forgot-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "forgot-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "reset-password",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltIiwicm9sZSI6IlJFU0VBUkNIRVIiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IlBFTkRJTkdfQURNSU5fQVBQUk9WQUwiLCJpYXQiOjE3OTMxOTkzOTYsImV4cCI6MTc5MzIwMjk5Nn0.cPK9kyE_F3XzOBG-vQuZsBxwt1VVeiPyxeNq1TD_fLE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\",\r\n  \"otp\":\"571846\",\r\n  \"newPassword\": \"Password123\",\r\n  \"repeatNewPassword\":\"Password123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/reset-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "reset-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "refresh-token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImlhdCI6MTc5MzIwMTUwMCwiZXhwIjoxNzkzODA2MzAwfQ.Uq77j_5j3Suqj95BGDaigeaf3vSq46J8jhN0hgExwSA\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/refresh-token",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "refresh-token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateProfileData",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW1tbW0iLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IlBFTkRJTkdfQURNSU5fQVBQUk9WQUwiLCJpYXQiOjE3OTMyMTEyNTQsImV4cCI6MTc5MzIxMjE1NH0.XU626lkiRy0msNleKATWWebD7ma2bERgdc-sDyDUmvk",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"fullName\": \"mmmm555\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/auth/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getProfileData",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltMjIyIiwicm9sZSI6IkFETUlOIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJQRU5ESU5HX0FETUlOX0FQUFJPVkFMIiwiaWF0IjoxNzkzNDA3MzY1LCJleHAiOjE3OTM0MDgyNjV9.BjAaIXg-WCRucwLJmWo_dhsTZIrjTBiFgWdSqQY2nAc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/auth/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

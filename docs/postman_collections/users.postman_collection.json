@@ -1,0 +1,182 @@
+{
+  "info": {
+    "_postman_id": "7df2825f-3cfb-4ee4-acbd-6b963db038fb",
+    "name": "users",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51603291"
+  },
+  "item": [
+    {
+      "name": "getUsers",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxZWNhNWFhLTZhZTEtNDk1MS05YmQ3LTVkMjI3NjQxNzgzZiIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltIiwicm9sZSI6IkFETUlOIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5MzQ2NDU3NCwiZXhwIjoxNzkzNDY1NDc0fQ.yv1ktjh98eSbaiEpNLa__E5SlVueLKmZvuDl99RxPqw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:1234/users?page=1&limit=1&role=ADMIN&status=APPROVED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "users"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "1"
+            },
+            {
+              "key": "role",
+              "value": "ADMIN"
+            },
+            {
+              "key": "status",
+              "value": "APPROVED"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getUserByID",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltMjIyIiwicm9sZSI6IkFETUlOIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJQRU5ESU5HX0FETUlOX0FQUFJPVkFMIiwiaWF0IjoxNzkzNDA3MzY1LCJleHAiOjE3OTM0MDgyNjV9.BjAaIXg-WCRucwLJmWo_dhsTZIrjTBiFgWdSqQY2nAc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"m2@gmail\",\r\n  \"password\":\"Password123\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:1234/users/5da74940-7093-48e7-87ee-1e71cd3521",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "users",
+            "5da74940-7093-48e7-87ee-1e71cd3521"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateUserByID",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltMjIyIiwicm9sZSI6IkFETUlOIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJQRU5ESU5HX0FETUlOX0FQUFJPVkFMIiwiaWF0IjoxNzkzNDA3MzY1LCJleHAiOjE3OTM0MDgyNjV9.BjAaIXg-WCRucwLJmWo_dhsTZIrjTBiFgWdSqQY2nAc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fullName\":\"mohamed ibrahim222\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/users/4fa2bae9-7ea3-4a18-a47a-294ff2968d55",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "users",
+            "4fa2bae9-7ea3-4a18-a47a-294ff2968d55"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteUserById",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRmYTJiYWU5LTdlYTMtNGExOC1hNDdhLTI5NGZmMjk2OGQ1NSIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltMjIyIiwicm9sZSI6IkFETUlOIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJQRU5ESU5HX0FETUlOX0FQUFJPVkFMIiwiaWF0IjoxNzkzNDA3MzY1LCJleHAiOjE3OTM0MDgyNjV9.BjAaIXg-WCRucwLJmWo_dhsTZIrjTBiFgWdSqQY2nAc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\":\"m23@gmail\",\r\n  \"password\":\"Password1243\",\r\n  \"fullName\":\"mohamed ibrahim2\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:1234/users/5da74940-7093-48e7-87ee-1e71cd352131",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "users",
+            "5da74940-7093-48e7-87ee-1e71cd352131"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateStatus",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
