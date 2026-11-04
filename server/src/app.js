@@ -12,7 +12,7 @@ const UsersRoutes = require('./routes/users');
 
 const app = express();
 app.use(express.json());
-//console.log({ limiter, errorHandler, xss });
+
 if (process.env.NODE_ENV === 'development') {
   console.log('Running in development mode');
   app.use(morgan('dev'));
