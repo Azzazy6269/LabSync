@@ -8,7 +8,7 @@ const limiter = require('./middlewares/rateLimiter');
 const errorHandler = require('./middlewares/errorHandler');
 const AuthRoutes = require('./routes/auth');
 const UsersRoutes = require('./routes/users');
-
+const ProjectsRoutes = require('./routes/projects')
 
 const app = express();
 app.use(express.json());
@@ -33,6 +33,7 @@ app.use(limiter);
 // Routers
 app.use('/auth', AuthRoutes);
 app.use('/users', UsersRoutes);
+app.use('/projects',ProjectsRoutes);
 app.use(errorHandler);
 
 
