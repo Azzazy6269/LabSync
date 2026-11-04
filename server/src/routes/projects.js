@@ -1,5 +1,6 @@
 const express = require('express');
 const validate = require('../middlewares/validate');
+const schemas = require('../schemas/projects');
 const projectsController = require('../controllers/projects');
 const { authenticate } = require('../middlewares/authenticate');
 const { restrictTo } = require('../middlewares/restrictTo');
@@ -13,6 +14,7 @@ router.post(
     authenticate,
     restrictTo('RESEARCHER'),
     uploadProposalDocs,
+    validate(schemas.submitProposalSchema),
     projectsController.submitProposal
 );
 
@@ -21,6 +23,7 @@ router.get(
     '/',
     authenticate,
     restrictTo('ADMIN', 'SUPERVISOR', 'RESEARCHER', 'MEMBER'),
+    validate(schemas.getAllProjectsSchema),
     projectsController.getAllProjects
 );
 
@@ -28,6 +31,7 @@ router.get(
 router.get(
     '/:id',
     authenticate,
+    validate(schemas.getProjectByIdSchema),
     projectsController.getProjectById
 );
 
@@ -36,6 +40,7 @@ router.patch(
     '/:id/admin-assign',
     authenticate,
     restrictTo('ADMIN'),
+    validate(schemas.adminAssignSupervisorSchema),
     projectsController.adminAssignSupervisor
 );
 
@@ -44,6 +49,7 @@ router.patch(
     '/:id/supervisor-acknowledge',
     authenticate,
     restrictTo('SUPERVISOR'),
+    validate(schemas.supervisorAcknowledgeSchema),
     projectsController.supervisorAcknowledge
 );
 
@@ -53,6 +59,7 @@ router.post(
     authenticate,
     restrictTo('RESEARCHER'),
     uploadFinalPaperDoc,
+    validate(schemas.submitFinalPaperSchema),
     projectsController.submitFinalPaper
 );
 
@@ -61,6 +68,7 @@ router.patch(
     '/:id/final-approval',
     authenticate,
     restrictTo('SUPERVISOR'),
+    validate(schemas.finalApprovalSchema),
     projectsController.finalApproval
 );
 
@@ -69,6 +77,7 @@ router.patch(
     '/:id/admin-reject',
     authenticate,
     restrictTo('ADMIN'),
+    validate(schemas.adminRejectSchema),
     projectsController.adminReject
 );
 
@@ -77,6 +86,7 @@ router.patch(
     '/:id/request-changes',
     authenticate,
     restrictTo('SUPERVISOR'),
+    validate(schemas.requestChangesSchema),
     projectsController.requestChanges
 );
 
