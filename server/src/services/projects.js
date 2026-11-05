@@ -1,8 +1,9 @@
 const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
-
+const deleteFiles = require('../../utils/deleteFiles');
 
 const submitProposal = async (userId, body, files) => {
+    try{
     const { title, description, field } = body;
 
     const approvalFile = files?.universityApprovalDoc?.[0];
@@ -76,6 +77,11 @@ const submitProposal = async (userId, body, files) => {
         message: 'Project proposal submitted successfully and is under Admin review.',
         data: newProject
     };
+    }catch(error){
+        await deleteFiles(files);
+        throw error;
+    }
+    
 };
 
 
@@ -90,13 +96,8 @@ const getAllProjects = async (currentUser, query) => {
     if (currentUser.role === 'ADMIN') {
         // Admins can see all projects
     } else if (currentUser.role === 'SUPERVISOR') {
-        // Supervisor views projects assigned to them or pending final approval
-        andConditions.push({
-            OR: [
-                { supervisorId: currentUser.id },
-                { status: 'PENDING_FINAL_APPROVAL' }
-            ]
-        });
+        // Supervisor views projects assigned to them
+        andConditions.push({supervisorId: currentUser.id});
     } else if (currentUser.role === 'RESEARCHER') {
         // Researcher views projects where they are the author
         andConditions.push({ authorId: currentUser.id });
@@ -232,6 +233,15 @@ const getProjectById = async (id) => {
         throw new APIError('Project not found', 404);
     }
 
+    const isAuthor = project.authorId === currentUser.id;
+    const isSupervisor = project.supervisorId === currentUser.id;
+    const isAdmin = currentUser.role === 'ADMIN';
+    const isPublished = project.status === 'PUBLISHED';
+
+    if (!isAdmin && !isAuthor && !isSupervisor && !isPublished) {
+        throw new APIError('You do not have permission to view this project', 403);
+    }
+
     return project;
 };
 
@@ -327,6 +337,7 @@ const supervisorAcknowledge = async (currentUser, id, action) => {
 
 
 const submitFinalPaper = async (currentUser, id, body, file) => {
+    try{
     if (!file) {
         throw new APIError('Final paper PDF document (finalPaperDoc) is required', 400);
     }
@@ -393,6 +404,11 @@ const submitFinalPaper = async (currentUser, id, body, file) => {
         message: 'Final paper submitted successfully. Awaiting supervisor approval.',
         data: result
     };
+    }catch(error){
+        await deleteFiles(files);
+        throw error;
+    }
+    
 };
 
 
