@@ -227,6 +227,15 @@ const getProjectById = async (id) => {
         throw new APIError('Project not found', 404);
     }
 
+    const isAuthor = project.authorId === currentUser.id;
+    const isSupervisor = project.supervisorId === currentUser.id;
+    const isAdmin = currentUser.role === 'ADMIN';
+    const isPublished = project.status === 'PUBLISHED';
+
+    if (!isAdmin && !isAuthor && !isSupervisor && !isPublished) {
+        throw new APIError('You do not have permission to view this project', 403);
+    }
+
     return project;
 };
 
