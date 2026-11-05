@@ -1,8 +1,9 @@
 const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
-
+const deleteFiles = require('../../utils/deleteFiles');
 
 const submitProposal = async (userId, body, files) => {
+    try{
     const { title, description, field } = body;
 
     const approvalFile = files?.universityApprovalDoc?.[0];
@@ -76,6 +77,11 @@ const submitProposal = async (userId, body, files) => {
         message: 'Project proposal submitted successfully and is under Admin review.',
         data: newProject
     };
+    }catch(error){
+        await deleteFiles(files);
+        throw error;
+    }
+    
 };
 
 
@@ -331,6 +337,7 @@ const supervisorAcknowledge = async (currentUser, id, action) => {
 
 
 const submitFinalPaper = async (currentUser, id, body, file) => {
+    try{
     if (!file) {
         throw new APIError('Final paper PDF document (finalPaperDoc) is required', 400);
     }
@@ -397,6 +404,11 @@ const submitFinalPaper = async (currentUser, id, body, file) => {
         message: 'Final paper submitted successfully. Awaiting supervisor approval.',
         data: result
     };
+    }catch(error){
+        await deleteFiles(files);
+        throw error;
+    }
+    
 };
 
 

@@ -13,8 +13,8 @@ router.post(
     '/',
     authenticate,
     restrictTo('RESEARCHER'),
-    uploadProposalDocs,
     validate(schemas.submitProposalSchema),
+    uploadProposalDocs,
     projectsController.submitProposal
 );
 
