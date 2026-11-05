@@ -3,7 +3,7 @@ model Project {
   title        String
   description  String        @db.Text
   field        String        // Scientific field(Bioinformatics, Physics, Chemistry...)
-  status       ProjectStatus @default(PENDING_SUPERVISOR_ACCEPTANCE)
+  status       ProjectStatus @default(PENDING_SUPERVISOR_ACKNOWLEDGEMENT)
   rejectionReason String?       @db.Text
 
   // Researcher
