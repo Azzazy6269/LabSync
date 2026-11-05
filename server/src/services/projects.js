@@ -90,13 +90,8 @@ const getAllProjects = async (currentUser, query) => {
     if (currentUser.role === 'ADMIN') {
         // Admins can see all projects
     } else if (currentUser.role === 'SUPERVISOR') {
-        // Supervisor views projects assigned to them or pending final approval
-        andConditions.push({
-            OR: [
-                { supervisorId: currentUser.id },
-                { status: 'PENDING_FINAL_APPROVAL' }
-            ]
-        });
+        // Supervisor views projects assigned to them
+        andConditions.push({supervisorId: currentUser.id});
     } else if (currentUser.role === 'RESEARCHER') {
         // Researcher views projects where they are the author
         andConditions.push({ authorId: currentUser.id });
