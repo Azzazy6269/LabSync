@@ -4,9 +4,9 @@ const redisConnection = require('../../config/redis');
 let ragQueue = null;
 
 try {
-    ragQueue = new Queue('rag-embeddings-queue', { redisConnection });
-    ragQueue.on('error', () => {
-        // Silently handle redis offline
+    ragQueue = new Queue('rag-embeddings-queue', { connection: redisConnection });
+    ragQueue.on('error', (err) => {
+        console.warn('⚠️ BullMQ Worker Redis connection error:', err.message);
     });
 } catch (error) {
     console.warn('⚠️ Could not initialize BullMQ Queue:', error.message);

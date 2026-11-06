@@ -32,10 +32,10 @@ const startRagWorker = () => {
             });
 
             console.log(`✅ Stored DocumentChunk with accessLevel='GLOBAL_LAB' for document: ${doc.id}`);
-        }, { redisConnection });
+        }, { connection:redisConnection });
 
         worker.on('error', (err) => {
-            // Gracefully handle redis offline
+            console.warn('⚠️ BullMQ Worker Redis connection error:', err.message);
         });
 
         return worker;
