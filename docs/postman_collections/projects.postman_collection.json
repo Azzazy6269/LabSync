@@ -1,0 +1,415 @@
+{
+  "info": {
+    "_postman_id": "1febebfb-a584-4168-8956-14e9dae47437",
+    "name": "projects",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51603291"
+  },
+  "item": [
+    {
+      "name": "submitProposal",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlmNGNiZTEzLTIzMjctNDViMS1hNDkwLWNmZTFkNDFkZmVjNSIsImVtYWlsIjoicmVzZWFyY2hlcjFAc3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiQWxleCBWYW5jZSIsInJvbGUiOiJSRVNFQVJDSEVSIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5Mzg0Njk4NiwiZXhwIjoxNzkzODQ3ODg2fQ.22C2DxwNIfgmFwb38dA2sNMJzTyuTr4n1TgZbIId1P0",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "rrrrrrrrrrrrrrrrrr",
+              "type": "text",
+              "uuid": "b8ea3e8d-3bff-4ea6-97a0-a1526dd8ea5b"
+            },
+            {
+              "key": "description",
+              "value": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+              "type": "text",
+              "uuid": "81752fbc-60a5-45dc-9dec-5886507ceaeb"
+            },
+            {
+              "key": "field",
+              "value": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+              "type": "text",
+              "uuid": "1a74a110-9bc5-48eb-8bcb-fd1478b7fa0b"
+            },
+            {
+              "key": "universityApprovalDoc",
+              "type": "file",
+              "uuid": "02d4e2e8-511c-4aef-95e1-4da50daa15c7",
+              "src": "/E:/Mohammed Ibrahim Elazzazy.pdf"
+            },
+            {
+              "key": "feeReceiptDoc",
+              "type": "file",
+              "uuid": "b83571f9-30f4-498c-b90e-97cfb79a6b95",
+              "src": "/E:/شهادة المزاولة.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getProjects",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZkYTBhODczLTdkZTgtNDZlNi1hMzcxLTJjNTc0OTkwZDFjMyIsImVtYWlsIjoiYWRtaW5Ac3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiU3lzdGVtIEFkbWluaXN0cmF0b3IiLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODQ5MTAzLCJleHAiOjE3OTM4NTAwMDN9.8k541a3Io1UxU2OHqcN8h9uQhoVhQQ78AHtGby6Facc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "rrrrrrrrrrrrrrrrrr",
+              "type": "text",
+              "uuid": "b8ea3e8d-3bff-4ea6-97a0-a1526dd8ea5b"
+            },
+            {
+              "key": "description",
+              "value": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+              "type": "text",
+              "uuid": "81752fbc-60a5-45dc-9dec-5886507ceaeb"
+            },
+            {
+              "key": "field",
+              "value": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+              "type": "text",
+              "uuid": "1a74a110-9bc5-48eb-8bcb-fd1478b7fa0b"
+            },
+            {
+              "key": "universityApprovalDoc",
+              "type": "file",
+              "uuid": "02d4e2e8-511c-4aef-95e1-4da50daa15c7",
+              "src": "/E:/Mohammed Ibrahim Elazzazy.pdf"
+            },
+            {
+              "key": "feeReceiptDoc",
+              "type": "file",
+              "uuid": "b83571f9-30f4-498c-b90e-97cfb79a6b95",
+              "src": "/E:/شهادة المزاولة.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getProjectByID",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZkYTBhODczLTdkZTgtNDZlNi1hMzcxLTJjNTc0OTkwZDFjMyIsImVtYWlsIjoiYWRtaW5Ac3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiU3lzdGVtIEFkbWluaXN0cmF0b3IiLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODQ5MTAzLCJleHAiOjE3OTM4NTAwMDN9.8k541a3Io1UxU2OHqcN8h9uQhoVhQQ78AHtGby6Facc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/projects/992e4a97-cb9b-41c2-8cd1-56a2d40cabf1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "992e4a97-cb9b-41c2-8cd1-56a2d40cabf1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "assignSupervisor",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZkYTBhODczLTdkZTgtNDZlNi1hMzcxLTJjNTc0OTkwZDFjMyIsImVtYWlsIjoiYWRtaW5Ac3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiU3lzdGVtIEFkbWluaXN0cmF0b3IiLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODQ5MTAzLCJleHAiOjE3OTM4NTAwMDN9.8k541a3Io1UxU2OHqcN8h9uQhoVhQQ78AHtGby6Facc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supervisorId\":\"22bbb49a-77f3-4f91-8bd9-24926b5a0e89\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/992e4a97-cb9b-41c2-8cd1-56a2d40cabf1/admin-assign",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "992e4a97-cb9b-41c2-8cd1-56a2d40cabf1",
+            "admin-assign"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "supervisorAcknowledge",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyYmJiNDlhLTc3ZjMtNGY5MS04YmQ5LTI0OTI2YjVhMGU4OSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODQ5NzgwLCJleHAiOjE3OTM4NTA2ODB9.Odq__GGi9gLXneP21CfX4ZnHd68XAdrnawScrC2b9cE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"action\":\"ACCEPT\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/992e4a97-cb9b-41c2-8cd1-56a2d40cabf1/supervisor-acknowledge",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "992e4a97-cb9b-41c2-8cd1-56a2d40cabf1",
+            "supervisor-acknowledge"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "submitFinal",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlmNGNiZTEzLTIzMjctNDViMS1hNDkwLWNmZTFkNDFkZmVjNSIsImVtYWlsIjoicmVzZWFyY2hlcjFAc3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiQWxleCBWYW5jZSIsInJvbGUiOiJSRVNFQVJDSEVSIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5Mzg0OTk3MiwiZXhwIjoxNzkzODUwODcyfQ.PDEb14gl3m4I_Nk8sowcNP2EsF3y_j32amc951GMXaM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "finalPaperDoc",
+              "type": "file",
+              "uuid": "b5564857-6b10-4820-9947-e66b11440716",
+              "src": "/E:/Embedded Systems Companies - Egypt.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/992e4a97-cb9b-41c2-8cd1-56a2d40cabf1/submit-final",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "992e4a97-cb9b-41c2-8cd1-56a2d40cabf1",
+            "submit-final"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "requestChanges",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyYmJiNDlhLTc3ZjMtNGY5MS04YmQ5LTI0OTI2YjVhMGU4OSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODQ5NzgwLCJleHAiOjE3OTM4NTA2ODB9.Odq__GGi9gLXneP21CfX4ZnHd68XAdrnawScrC2b9cE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"feedback\":\"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/992e4a97-cb9b-41c2-8cd1-56a2d40cabf1/request-changes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "992e4a97-cb9b-41c2-8cd1-56a2d40cabf1",
+            "request-changes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "finalApproval",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyYmJiNDlhLTc3ZjMtNGY5MS04YmQ5LTI0OTI2YjVhMGU4OSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODQ5NzgwLCJleHAiOjE3OTM4NTA2ODB9.Odq__GGi9gLXneP21CfX4ZnHd68XAdrnawScrC2b9cE",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"decision\":\"APPROVE\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/992e4a97-cb9b-41c2-8cd1-56a2d40cabf1/final-approval",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "992e4a97-cb9b-41c2-8cd1-56a2d40cabf1",
+            "final-approval"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "rejectProposal",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZkYTBhODczLTdkZTgtNDZlNi1hMzcxLTJjNTc0OTkwZDFjMyIsImVtYWlsIjoiYWRtaW5Ac3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiU3lzdGVtIEFkbWluaXN0cmF0b3IiLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzkzODUwNDcyLCJleHAiOjE3OTM4NTEzNzJ9.GluyPGKeGFpZyMz1iohEEY9x6aaqKNppTSU3LJnJIt0",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"rejectionReason\":\"APPROVE\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/projects/74f88088-5906-47c6-8713-722396ccd0c6/admin-reject",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "projects",
+            "74f88088-5906-47c6-8713-722396ccd0c6",
+            "admin-reject"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
