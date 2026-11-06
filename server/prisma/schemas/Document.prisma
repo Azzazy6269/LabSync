@@ -37,7 +37,7 @@ model DocumentChunk {
 
   embedding   Unsupported("vector(1536)")?
 
-  accessLevel RAGAccessLevel            @default(PRIVATE_PROJECT)
+  accessLevel RAGAccessLevel            @default(GLOBAL_LAB)
 
   createdAt   DateTime                  @default(now())
 
