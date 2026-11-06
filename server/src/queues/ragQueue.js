@@ -1,19 +1,10 @@
 const { Queue } = require('bullmq');
+const redisConnection = require('../../config/redis');
 
 let ragQueue = null;
 
-const connection = {
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: parseInt(process.env.REDIS_PORT || '6379', 10),
-    password: process.env.REDIS_PASSWORD || undefined,
-    maxRetriesPerRequest: null,
-    enableOfflineQueue: false,
-    connectTimeout: 1000,
-    retryStrategy: () => null
-};
-
 try {
-    ragQueue = new Queue('rag-embeddings-queue', { connection });
+    ragQueue = new Queue('rag-embeddings-queue', { redisConnection });
     ragQueue.on('error', () => {
         // Silently handle redis offline
     });
