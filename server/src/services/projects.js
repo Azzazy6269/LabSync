@@ -2,6 +2,9 @@ const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
 const deleteFiles = require('../../utils/deleteFiles');
 const { triggerRagEmbeddingJob } = require('../queues/ragQueue')
+
+
+
 const submitProposal = async (userId, body, files) => {
     try{
     const { title, description, field } = body;
@@ -462,8 +465,12 @@ const finalApproval = async (currentUser, id, body) => {
         return updated;
     });
 
-    triggerRagEmbeddingJob({projectId:id, documentId:project.documents[0].id});
-    
+    if (project.documents && project.documents.length > 0) {
+        triggerRagEmbeddingJob({ projectId: id, documentId: project.documents[0].id });
+    } else {
+        console.warn(`⚠️ No final paper document found to trigger RAG for project: ${id}`);
+    }
+
     return {
         message: 'Supervisor approved final paper. Published to laboratory knowledge base.',
         data: updatedProject
