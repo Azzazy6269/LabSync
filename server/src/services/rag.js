@@ -12,7 +12,7 @@ const ai = new GoogleGenAI({
 const EMBEDDING_MODEL = 'gemini-embedding-001';
 const GENERATION_MODEL = 'gemini-2.5-flash';
 
-const EMBEDDING_DIMENSIONS = 768;
+const EMBEDDING_DIMENSIONS = 1536;
 
 // Chunking configuration
 const CHUNK_SIZE = 2800;

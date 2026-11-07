@@ -35,7 +35,7 @@ model DocumentChunk {
   content     String                    @db.Text 
   
 
-  embedding   Unsupported("vector(768)")?
+  embedding   Unsupported("vector(1536)")?
 
   accessLevel RAGAccessLevel            @default(GLOBAL_LAB)
 
