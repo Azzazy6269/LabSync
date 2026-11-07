@@ -1,6 +1,6 @@
 const pdfParse = require('pdf-parse');
 const fs = require('fs/promises');
-const prisma = require('../config/prisma');
+const prisma = require('../../config/prisma');
 const { GoogleGenAI } = require('@google/genai');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });

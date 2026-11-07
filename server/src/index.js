@@ -3,7 +3,7 @@ dotenv.config();
 
 const app = require('./app');
 const prisma = require('../config/prisma');
-const { startRagWorker } = require('./worker/ragWorker');
+const { startRagWorker } = require('./workers/ragWorker');
 
 const PORT = process.env.PORT || 1234;
 

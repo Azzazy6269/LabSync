@@ -1,7 +1,7 @@
 const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
 const deleteFiles = require('../../utils/deleteFiles');
-
+const { triggerRagEmbeddingJob } = require('../queues/ragQueue')
 const submitProposal = async (userId, body, files) => {
     try{
     const { title, description, field } = body;
@@ -462,10 +462,8 @@ const finalApproval = async (currentUser, id, body) => {
         return updated;
     });
 
-    // TODO: Trigger RAG Vector Embedding Pipeline (BullMQ Queue)
-    // Example: await ragQueue.add('generate-embeddings', { projectId: id });
-    console.log(`[STUB] Final paper approved for project ${id}. RAG ingestion will be triggered here.`);
-
+    triggerRagEmbeddingJob({projectId:id, documentId:project.documents[0].id});
+    
     return {
         message: 'Supervisor approved final paper. Published to laboratory knowledge base.',
         data: updatedProject

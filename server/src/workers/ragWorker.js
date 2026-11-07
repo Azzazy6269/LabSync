@@ -1,7 +1,7 @@
 const { Worker } = require('bullmq');
 const prisma = require('../../config/prisma');
 const redisConnection = require('../../config/redis');
-
+const { parseAndChunk, generateBatchEmbeddings } = require('../services/rag');
 
 const startRagWorker = () => {
     try {
@@ -13,26 +13,53 @@ const startRagWorker = () => {
                 where: { id: documentId }
             });
 
-            if (!doc) {
-                console.warn(`Document ${documentId} not found for RAG processing.`);
+            if (!doc || !doc.fileUrl) {
+                console.warn(`⚠️ Document ${documentId} not found or missing fileUrl.`);
                 return;
             }
 
-            // Extract content and chunk
-            const sampleContent = `Document ${doc.title} (${doc.docType}). Published final research paper for project ${projectId}.`;
+            console.log(`📄 Extracting text chunks from: ${doc.fileUrl}`);
+            const chunks = await parseAndChunk(doc.fileUrl);
+            if (chunks.length === 0) {
+                console.warn(`⚠️ No text extracted from document: ${documentId}`);
+                return;
+            }
 
-            // Store chunk with accessLevel = 'GLOBAL_LAB'
-            await prisma.documentChunk.create({
-                data: {
-                    projectId,
-                    documentId,
-                    content: sampleContent,
-                    accessLevel: 'GLOBAL_LAB'
-                }
-            });
+            console.log(`🧠 Generating embeddings for ${chunks.length} chunks...`);
+            const embeddings = await generateBatchEmbeddings(chunks);
 
-            console.log(`✅ Stored DocumentChunk with accessLevel='GLOBAL_LAB' for document: ${doc.id}`);
-        }, { connection:redisConnection });
+            console.log(`💾 Saving chunks into database...`);
+            for (let i = 0; i < chunks.length; i++) {
+                const chunkText = chunks[i];
+                const vectorString = JSON.stringify(embeddings[i]);
+
+                await prisma.$executeRaw`
+                    INSERT INTO "DocumentChunk" (
+                        "id", 
+                        "projectId", 
+                        "documentId", 
+                        "content", 
+                        "embedding", 
+                        "accessLevel", 
+                        "createdAt"
+                    )
+                    VALUES (
+                        gen_random_uuid(), 
+                        ${projectId}, 
+                        ${documentId}, 
+                        ${chunkText}, 
+                        ${vectorString}::vector, 
+                        'GLOBAL_LAB'::"RAGAccessLevel", 
+                        NOW()
+                    );
+                `;
+            }
+
+            console.log(`✅ Successfully stored ${chunks.length} chunks with embeddings for document: ${doc.id}`);
+        }, { 
+            connection: redisConnection,
+            concurrency: 2
+        });
 
         worker.on('error', (err) => {
             console.warn('⚠️ BullMQ Worker Redis connection error:', err.message);
