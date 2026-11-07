@@ -221,22 +221,29 @@ const parseAndChunk = async (
     chunkSize = CHUNK_SIZE,
     chunkOverlap = CHUNK_OVERLAP
 ) => {
-    const dataBuffer = typeof filePathOrBuffer === 'string'
-        ? await fs.readFile(filePathOrBuffer)
-        : filePathOrBuffer;
+    let dataBuffer;
+
+    if (typeof filePathOrBuffer === 'string') {
+        
+        const absolutePath = path.resolve(
+            process.cwd(),
+            filePathOrBuffer.replace(/^[/\\]+/, '')
+        );
+
+        dataBuffer = await fs.readFile(absolutePath);
+    } else {
+        dataBuffer = filePathOrBuffer;
+    }
 
     const pdfData = await pdfParse(dataBuffer);
 
-    // Preserve paragraph boundaries during text cleaning.
     const text = pdfData.text
         .replace(/\r\n/g, '\n')
         .replace(/[ \t]+/g, ' ')
         .replace(/\n{3,}/g, '\n\n')
         .trim();
 
-    if (!text) {
-        return [];
-    }
+    if (!text) return [];
 
     return createChunks(text, chunkSize, chunkOverlap);
 };

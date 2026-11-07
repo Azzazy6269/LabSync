@@ -1,6 +1,7 @@
 
 const { Worker, UnrecoverableError } = require('bullmq');
 const { Prisma } = require('@prisma/client');
+const path = require('path');
 
 const prisma = require('../../config/prisma');
 const redisConnection = require('../../config/redis');
@@ -122,6 +123,8 @@ const startRagWorker = () => {
             console.log(`Extracting text from ${doc.fileUrl}`);
             const relativeFilePath = doc.fileUrl;
             const absolutePath = path.join(process.cwd(), relativeFilePath);
+            console.log(`absolutePath: ${absolutePath}`);
+
             const chunks = await parseAndChunk(absolutePath);
 
             if (chunks.length === 0) {
