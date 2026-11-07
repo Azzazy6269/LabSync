@@ -178,21 +178,31 @@ const startRagWorker = () => {
         }
     );
 
+    worker.on('ready', () => {
+        console.log('RAG Worker is ready and waiting for jobs.');
+    });
+
+    worker.on('active', (job) => {
+        console.log(`RAG Worker started processing job ${job.id}.`);
+    });
+
     worker.on('completed', (job) => {
-        console.log(`RAG job ${job.id} completed successfully.`);
+        console.log(`RAG job ${job.id} completed.`);
     });
 
     worker.on('failed', (job, error) => {
-        console.error(
-            `RAG job ${job?.id} failed: ${error.message}`
-        );
+        console.error(`RAG job ${job?.id} failed: ${error.message}`);
     });
 
     worker.on('error', (error) => {
-        console.error(
-            `BullMQ worker error: ${error.message}`
-        );
+        console.error(`RAG Worker error: ${error.message}`);
     });
+        
+        worker.on('failed', (job, error) => {
+            console.error(
+                `RAG job ${job?.id} failed: ${error.message}`
+            );
+        });
 
     return worker;
 };

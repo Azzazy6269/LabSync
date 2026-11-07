@@ -43,6 +43,7 @@ try {
 /**
  * Dispatches a document indexing job without blocking the HTTP request.
  */
+
 const triggerRagEmbeddingJob = async ({
     projectId,
     documentId
@@ -53,6 +54,36 @@ const triggerRagEmbeddingJob = async ({
     }
 
     try {
+        const jobId = `rag-${documentId}`;
+
+        // Check whether a job with the same ID already exists.
+        const existingJob = await ragQueue.getJob(jobId);
+
+        if (existingJob) {
+            const existingState = await existingJob.getState();
+
+            console.log(
+                `Existing RAG job found: ${jobId}, State: ${existingState}`
+            );
+
+            // Remove old jobs that cannot be processed again through queue.add().
+            if (
+                existingState === 'failed' ||
+                existingState === 'completed'
+            ) {
+                await existingJob.remove();
+
+                console.log(`Removed old RAG job: ${jobId}`);
+            } else {
+                console.log(
+                    `RAG job ${jobId} is already ${existingState}.`
+                );
+
+                return existingJob;
+            }
+        }
+
+        // Create a fresh job.
         const job = await ragQueue.add(
             'generate-embeddings',
             {
@@ -60,14 +91,16 @@ const triggerRagEmbeddingJob = async ({
                 documentId
             },
             {
-                // Prevent simultaneous duplicate jobs for the same document.
-                jobId: `rag-${documentId}`
+                jobId,
+                attempts: 4,
+                backoff: {
+                    type: 'exponential',
+                    delay: 10000
+                }
             }
         );
 
-        console.log(
-            `Queued RAG job ${job.id} for document ${documentId}.`
-        );
+        console.log(`Queued new RAG job: ${job.id}`);
 
         return job;
 
@@ -77,6 +110,7 @@ const triggerRagEmbeddingJob = async ({
         );
     }
 };
+
 
 module.exports = {
     ragQueue,
