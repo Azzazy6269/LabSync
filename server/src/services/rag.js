@@ -1,4 +1,4 @@
-const pdfParse = require('pdf-parse');
+const pdfParseModule = require('pdf-parse');
 const fs = require('fs/promises');
 const prisma = require('../../config/prisma');
 const { GoogleGenAI } = require('@google/genai');
@@ -214,6 +214,32 @@ const createChunks = (
 };
 
 /**
+ * Extracts raw text from a PDF buffer using pdf-parse (supports v1 function and v2 class API).
+ */
+const extractPdfText = async (dataBuffer) => {
+    if (typeof pdfParseModule === 'function') {
+        const result = await pdfParseModule(dataBuffer);
+        return result?.text || '';
+    }
+    if (pdfParseModule?.PDFParse) {
+        const parser = new pdfParseModule.PDFParse({ data: dataBuffer });
+        try {
+            const result = await parser.getText();
+            return result?.text || '';
+        } finally {
+            if (typeof parser.destroy === 'function') {
+                await parser.destroy().catch(() => {});
+            }
+        }
+    }
+    if (typeof pdfParseModule?.default === 'function') {
+        const result = await pdfParseModule.default(dataBuffer);
+        return result?.text || '';
+    }
+    throw new Error('Unsupported pdf-parse module format');
+};
+
+/**
  * Extracts text from a PDF and splits it into overlapping chunks.
  */
 const parseAndChunk = async (
@@ -224,7 +250,6 @@ const parseAndChunk = async (
     let dataBuffer;
 
     if (typeof filePathOrBuffer === 'string') {
-        
         const absolutePath = path.resolve(
             process.cwd(),
             filePathOrBuffer.replace(/^[/\\]+/, '')
@@ -235,9 +260,9 @@ const parseAndChunk = async (
         dataBuffer = filePathOrBuffer;
     }
 
-    const pdfData = await pdfParse(dataBuffer);
+    const rawText = await extractPdfText(dataBuffer);
 
-    const text = pdfData.text
+    const text = (rawText || '')
         .replace(/\r\n/g, '\n')
         .replace(/[ \t]+/g, ' ')
         .replace(/\n{3,}/g, '\n\n')
