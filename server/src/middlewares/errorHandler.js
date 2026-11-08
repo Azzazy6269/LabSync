@@ -14,5 +14,5 @@ module.exports = (err, req, res, next) => {
     if (err.code === '23503') { 
         return res.status(400).json({ message: "Foreign key constraint failure", success: false, isClientError: true });
     }
-    res.status(500).json({ message: "an error happend", success: false, isClientError: false })
+    res.status(500).json({ message: "An error Occured", success: false, isClientError: false })
 }

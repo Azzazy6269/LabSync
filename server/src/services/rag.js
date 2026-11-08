@@ -5,7 +5,8 @@ const { GoogleGenAI } = require('@google/genai');
 const path = require('path');
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
+    apiKey: process.env.GEMINI_API_KEY,
+    apiVersion: 'v1beta'
 });
 
 // Model configuration
