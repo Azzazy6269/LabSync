@@ -34,7 +34,7 @@ app.use(limiter);
 app.use('/auth', AuthRoutes);
 app.use('/users', UsersRoutes);
 app.use('/projects',ProjectsRoutes);
-app.use('/rag',RAGRoutes);
+app.use('/knowledge-base',RAGRoutes);
 app.use(errorHandler);
 
 
