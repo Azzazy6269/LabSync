@@ -125,7 +125,8 @@ const startRagWorker = () => {
             const absolutePath = path.join(process.cwd(), relativeFilePath);
             console.log(`absolutePath: ${absolutePath}`);
 
-            const chunks = await parseAndChunk(absolutePath);
+            //const chunks = await parseAndChunk(absolutePath);
+            const chunks = await parseAndChunk(doc.fileUrl);
 
             if (chunks.length === 0) {
                 throw new UnrecoverableError(

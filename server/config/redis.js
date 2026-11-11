@@ -4,8 +4,12 @@ const redisConnection = {
     password: process.env.REDIS_PASSWORD || undefined,
     maxRetriesPerRequest: null,
     enableOfflineQueue: false,
-    connectTimeout: 1000,
-    retryStrategy: () => null
+    connectTimeout: 10000, 
+    keepAlive: 10000, 
+    retryStrategy: (times) => {
+        const delay = Math.min(times * 200, 3000);
+        return delay;
+    }
 };
 
 module.exports = redisConnection;
