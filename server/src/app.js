@@ -31,10 +31,14 @@ app.use(limiter);
 
 
 // Routers
-app.use('/auth', AuthRoutes);
-app.use('/users', UsersRoutes);
-app.use('/projects',ProjectsRoutes);
-app.use('/rag',RAGRoutes);
+const apiRouter = express.Router();
+apiRouter.use('/auth', AuthRoutes);
+apiRouter.use('/users', UsersRoutes);
+apiRouter.use('/projects', ProjectsRoutes);
+apiRouter.use('/knowledge-base', RAGRoutes);
+
+app.use('/api/v1', apiRouter);
+
 app.use(errorHandler);
 
 
