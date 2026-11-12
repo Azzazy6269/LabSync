@@ -17,7 +17,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxZWNhNWFhLTZhZTEtNDk1MS05YmQ3LTVkMjI3NjQxNzgzZiIsImVtYWlsIjoibW9oYW1hZGVsYXp6YXp5QGdtYWlsLmNvbSIsImZ1bGxOYW1lIjoibW9oYW1lZCBpYnJhaGltIiwicm9sZSI6IkFETUlOIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5MzQ2NDU3NCwiZXhwIjoxNzkzNDY1NDc0fQ.yv1ktjh98eSbaiEpNLa__E5SlVueLKmZvuDl99RxPqw",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFhMjdmY2Y3LTczOTUtNDllNy1iNWNkLTI2OTVjZGM4MDIxMCIsImVtYWlsIjoiYWRtaW5Ac3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiU3lzdGVtIEFkbWluaXN0cmF0b3IiLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0MTA3OTcwLCJleHAiOjE3OTQxOTQzNzB9.lPPE85bX5JYXko4wpXN8yFZ1Ab470ZX8Z8oFSm50m18",
               "type": "string"
             }
           ]
@@ -29,13 +29,15 @@
           "raw": ""
         },
         "url": {
-          "raw": "http://localhost:1234/users?page=1&limit=1&role=ADMIN&status=APPROVED",
+          "raw": "http://localhost:1234/api/v1/users?page=1&limit=1&role=SUPERVISOR&status=APPROVED",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "users"
           ],
           "query": [
@@ -49,7 +51,7 @@
             },
             {
               "key": "role",
-              "value": "ADMIN"
+              "value": "SUPERVISOR"
             },
             {
               "key": "status",
@@ -83,13 +85,15 @@
           "raw": "{\r\n  \"email\":\"m2@gmail\",\r\n  \"password\":\"Password123\"\r\n}"
         },
         "url": {
-          "raw": "http://localhost:1234/users/5da74940-7093-48e7-87ee-1e71cd3521",
+          "raw": "http://localhost:1234/api/v1/users/5da74940-7093-48e7-87ee-1e71cd3521",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "users",
             "5da74940-7093-48e7-87ee-1e71cd3521"
           ]
@@ -122,13 +126,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/users/4fa2bae9-7ea3-4a18-a47a-294ff2968d55",
+          "raw": "http://localhost:1234/api/v1/users/4fa2bae9-7ea3-4a18-a47a-294ff2968d55",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "users",
             "4fa2bae9-7ea3-4a18-a47a-294ff2968d55"
           ]
@@ -156,13 +162,15 @@
           "raw": "{\r\n  \"email\":\"m23@gmail\",\r\n  \"password\":\"Password1243\",\r\n  \"fullName\":\"mohamed ibrahim2\"\r\n}"
         },
         "url": {
-          "raw": "http://localhost:1234/users/5da74940-7093-48e7-87ee-1e71cd352131",
+          "raw": "http://localhost:1234/api/v1/users/5da74940-7093-48e7-87ee-1e71cd352131",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "users",
             "5da74940-7093-48e7-87ee-1e71cd352131"
           ]
@@ -173,8 +181,42 @@
     {
       "name": "updateStatus",
       "request": {
-        "method": "GET",
-        "header": []
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJiNjJkN2UyLTMyOTAtNDE3ZC1hYWQxLTNiNDZkMTQzYTc5NiIsImVtYWlsIjoiYWRtaW5Ac3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiU3lzdGVtIEFkbWluaXN0cmF0b3IiLCJyb2xlIjoiQURNSU4iLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0NDM4MTM2LCJleHAiOjE3OTQ1MjQ1MzZ9.vD4hkEW1zBJj0Hcth2YyUIhNxi_UU_ViTLufDhtFURg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\":\"APPROVED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/users/61aa1860-19c0-485c-83f5-9f15a7805e46/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "users",
+            "61aa1860-19c0-485c-83f5-9f15a7805e46",
+            "status"
+          ]
+        }
       },
       "response": []
     }

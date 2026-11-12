@@ -21,13 +21,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/signUp",
+          "raw": "http://localhost:1234/api/v1/auth/signUp",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "signUp"
           ]
@@ -42,7 +44,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\":\"mohamadelazzazy@gmail.com\",\r\n  \"password\":\"Password123\"\r\n}",
+          "raw": "/*\r\n{\r\n  \"email\":\"researcher1@system.com\",\r\n  \"password\":\"Password123!\"\r\n}\r\n*/\r\n/*\r\n{\r\n    \"email\": \"admin@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n*/\r\n\r\n{\r\n    \"email\": \"supervisor@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -50,13 +52,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/signIn",
+          "raw": "http://localhost:1234/api/v1/auth/signIn",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "signIn"
           ]
@@ -79,13 +83,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/resend-otp",
+          "raw": "http://localhost:1234/api/v1/auth/resend-otp",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "resend-otp"
           ]
@@ -108,13 +114,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/verify-otp",
+          "raw": "http://localhost:1234/api/v1/auth/verify-otp",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "verify-otp"
           ]
@@ -147,13 +155,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/change-password",
+          "raw": "http://localhost:1234/api/v1/auth/change-password",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "change-password"
           ]
@@ -186,13 +196,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/forgot-password",
+          "raw": "http://localhost:1234/api/v1/auth/forgot-password",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "forgot-password"
           ]
@@ -225,13 +237,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/reset-password",
+          "raw": "http://localhost:1234/api/v1/auth/reset-password",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "reset-password"
           ]
@@ -254,13 +268,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/refresh-token",
+          "raw": "http://localhost:1234/api/v1/auth/refresh-token",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "refresh-token"
           ]
@@ -293,13 +309,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:1234/auth/me",
+          "raw": "http://localhost:1234/api/v1/auth/me",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "me"
           ]
@@ -323,13 +341,15 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:1234/auth/me",
+          "raw": "http://localhost:1234/api/v1/auth/me",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "1234",
           "path": [
+            "api",
+            "v1",
             "auth",
             "me"
           ]
