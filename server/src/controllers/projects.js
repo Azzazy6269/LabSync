@@ -29,7 +29,7 @@ const getAllProjects = async (req, res, next) => {
 
 const getProjectById = async (req, res, next) => {
     try {
-        const project = await projectsService.getProjectById(req.params.id);
+        const project = await projectsService.getProjectById(req.params.id, req.user);
         res.status(200).json({
             success: true,
             data: project

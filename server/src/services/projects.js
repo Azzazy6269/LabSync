@@ -176,7 +176,7 @@ const getAllProjects = async (currentUser, query) => {
 };
 
 
-const getProjectById = async (id) => {
+const getProjectById = async (id, currentUser = null) => {
     const project = await prisma.project.findUnique({
         where: { id },
         select: {
@@ -214,7 +214,7 @@ const getProjectById = async (id) => {
                 },
                 orderBy: { createdAt: 'desc' }
             },
-            comments: {
+            messages: {
                 select: {
                     id: true,
                     content: true,
@@ -224,6 +224,15 @@ const getProjectById = async (id) => {
                             id: true,
                             fullName: true,
                             role: true
+                        }
+                    },
+                    attachment: {
+                        select: {
+                            id: true,
+                            title: true,
+                            fileUrl: true,
+                            docType: true,
+                            version: true
                         }
                     }
                 },
@@ -236,16 +245,22 @@ const getProjectById = async (id) => {
         throw new APIError('Project not found', 404);
     }
 
-    const isAuthor = project.authorId === currentUser.id;
-    const isSupervisor = project.supervisorId === currentUser.id;
-    const isAdmin = currentUser.role === 'ADMIN';
-    const isPublished = project.status === 'PUBLISHED';
+    if (currentUser) {
+        const isAuthor = project.author?.id === currentUser.id;
+        const isSupervisor = project.supervisor?.id === currentUser.id;
+        const isAdmin = currentUser.role === 'ADMIN';
+        const isPublished = project.status === 'PUBLISHED';
 
-    if (!isAdmin && !isAuthor && !isSupervisor && !isPublished) {
-        throw new APIError('You do not have permission to view this project', 403);
+        if (!isAdmin && !isAuthor && !isSupervisor && !isPublished) {
+            throw new APIError('You do not have permission to view this project', 403);
+        }
     }
 
-    return project;
+    // Preserve comments field for backward compatibility with clients expecting it
+    return {
+        ...project,
+        comments: project.messages
+    };
 };
 
 
@@ -453,7 +468,7 @@ const finalApproval = async (currentUser, id, body) => {
         });
 
         if (reviewNotes && reviewNotes.trim()) {
-            await tx.comment.create({
+            await tx.projectMessage.create({
                 data: {
                     projectId: id,
                     userId: currentUser.id,
@@ -540,8 +555,8 @@ const requestChanges = async (currentUser, id, feedback) => {
             }
         });
 
-        // Automatically adds the feedback as a system comment
-        await tx.comment.create({
+        // Automatically adds the feedback as a project message in the conversation
+        await tx.projectMessage.create({
             data: {
                 projectId: id,
                 userId: currentUser.id,

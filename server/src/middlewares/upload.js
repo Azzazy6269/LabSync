@@ -75,8 +75,17 @@ const uploadFinalPaperDoc = handleUpload(
     upload.single('finalPaperDoc')
 );
 
+const uploadWorkspaceAttachment = handleUpload(
+    upload.fields([
+        { name: 'attachment', maxCount: 1 },
+        { name: 'file', maxCount: 1 },
+        { name: 'draftDoc', maxCount: 1 }
+    ])
+);
+
 module.exports = {
     uploadProposalDocs,
-    uploadFinalPaperDoc
+    uploadFinalPaperDoc,
+    uploadWorkspaceAttachment
 };
 
