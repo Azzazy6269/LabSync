@@ -6,13 +6,9 @@ model ProjectMessage {
   userId       String
   user         User      @relation(fields: [userId], references: [id])
   
-  // Optional reference to a document being commented on (feedback / reviews)
-  documentId   String?
-  document     Document? @relation("DocumentComments", fields: [documentId], references: [id], onDelete: SetNull)
-
   // Optional attached document (e.g. draft paper uploaded in chat)
   attachmentId String?   @unique
-  attachment   Document? @relation("MessageAttachment", fields: [attachmentId], references: [id], onDelete: SetNull)
+  attachment   Document? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
 
   content      String?   @db.Text
   createdAt    DateTime  @default(now())

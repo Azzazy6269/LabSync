@@ -336,7 +336,7 @@ async function main() {
       documentId: docFinal1.id,
       content:
         'Abstract: We evaluate garbage collection pause times in modern Java Virtual Machines across heap sizes ranging from 4GB to 64GB.',
-      accessLevel: RAGAccessLevel.PRIVATE_PROJECT,
+      accessLevel: RAGAccessLevel.GLOBAL_LAB,
       seed: 1.1,
     },
     {
@@ -344,7 +344,7 @@ async function main() {
       documentId: docFinal1.id,
       content:
         'Methodology: Benchmarks were executed on isolated Linux nodes using JMH with deterministic allocation rates.',
-      accessLevel: RAGAccessLevel.PRIVATE_PROJECT,
+      accessLevel: RAGAccessLevel.GLOBAL_LAB,
       seed: 2.2,
     },
     {
@@ -352,7 +352,7 @@ async function main() {
       documentId: docDraft2.id,
       content:
         'Sparse attention masks reduce quadratic O(N^2) memory overhead when folding protein sequences exceeding 2,048 residues.',
-      accessLevel: RAGAccessLevel.PRIVATE_PROJECT,
+      accessLevel: RAGAccessLevel.GLOBAL_LAB,
       seed: 3.3,
     },
     {
@@ -398,12 +398,11 @@ async function main() {
     },
   });
 
-  // Message reviewing/commenting on a specific document (documentId)
+  // Message reviewing the initial draft
   await prisma.projectMessage.create({
     data: {
       projectId: projectPendingFinal.id,
       userId: supervisor.id,
-      documentId: docDraft1.id,
       content:
         'The benchmark methodology in v1 looks solid. Please expand Section 4 with ZGC tail-latency percentiles and upload the final camera-ready version.',
     },
@@ -425,7 +424,6 @@ async function main() {
     data: {
       projectId: projectInProgress.id,
       userId: googleUser.id,
-      documentId: docDraft2.id,
       content:
         'Initial sparse attention draft is ready for weekly lab review.',
     },
