@@ -90,5 +90,9 @@ router.patch(
     projectsController.requestChanges
 );
 
+// 10. Project Workspace (Chat & File Sharing)
+const workspaceRouter = require('./workspace');
+router.use('/:id/workspace', workspaceRouter);
+
 module.exports = router;
 
