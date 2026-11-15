@@ -10,4 +10,13 @@ const router = express.Router({ mergeParams: true });
 // All workspace operations require authenticated user
 router.use(authenticate);
 
+
+// 1. Workspace Overview
+router.get(
+    '/',
+    validate(schemas.getWorkspaceSchema),
+    workspaceController.getWorkspaceOverview
+);
+
+
 module.exports = router;
