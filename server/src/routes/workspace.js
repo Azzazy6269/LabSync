@@ -18,5 +18,12 @@ router.get(
     workspaceController.getWorkspaceOverview
 );
 
+// 2. Conversation Messages (Cursor-based pagination)
+router.get(
+    '/messages',
+    validate(schemas.getMessagesSchema),
+    workspaceController.getMessages
+);
+
 
 module.exports = router;
