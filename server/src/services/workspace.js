@@ -2,6 +2,9 @@ const path = require('path');
 const fs = require('fs');
 const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
+const deleteFiles = require('../../utils/deleteFiles');
+
+
 
 /**
  * Reusable authorization helper:
@@ -97,7 +100,6 @@ const getWorkspaceOverview = async (projectId, currentUser) => {
         latestFinalPaper
     };
 };
-
 
 
 /**
@@ -230,8 +232,175 @@ const getMessages = async (projectId, currentUser, query = {}) => {
     };
 };
 
+
+/**
+ * 3. Send Message (Text and/or Draft Paper Attachment)
+ */
+const sendMessage = async (projectId, currentUser, body = {}, file = null) => {
+    await verifyWorkspaceAccess(projectId, currentUser, ['IN_PROGRESS', 'PENDING_FINAL_APPROVAL']);
+
+    const content = body.content ? String(body.content).trim() : null;
+
+    if (!content && !file) {
+        throw new APIError('Message content or an attached file is required', 400);
+    }
+
+    return await prisma.$transaction(async (tx) => {
+        let attachedDoc = null;
+
+        if (file) {
+            // Find current max version for DRAFT_PAPER in this project
+            const latestDraft = await tx.document.findFirst({
+                where: { projectId, docType: 'DRAFT_PAPER' },
+                orderBy: { version: 'desc' }
+            });
+
+            const nextVersion = latestDraft ? latestDraft.version + 1 : 1;
+            const docTitle = body.title ? String(body.title).trim() : file.originalname || `Draft Paper v${nextVersion}`;
+
+            attachedDoc = await tx.document.create({
+                data: {
+                    projectId,
+                    uploadedById: currentUser.id,
+                    title: docTitle,
+                    fileUrl: `/uploads/documents/${file.filename}`,
+                    docType: 'DRAFT_PAPER',
+                    version: nextVersion
+                }
+            });
+        }
+
+        const message = await tx.projectMessage.create({
+            data: {
+                projectId,
+                userId: currentUser.id,
+                content: content || null,
+                attachmentId: attachedDoc ? attachedDoc.id : null
+            },
+            include: {
+                user: {
+                    select: { id: true, fullName: true, role: true, email: true, jobTitle: true }
+                },
+                attachment: {
+                    select: {
+                        id: true,
+                        title: true,
+                        fileUrl: true,
+                        docType: true,
+                        version: true,
+                        createdAt: true
+                    }
+                }
+            }
+        });
+
+        return message;
+    });
+};
+
+
+/**
+ * 4. Edit Message
+ */
+const editMessage = async (projectId, messageId, currentUser, body = {}) => {
+    await verifyWorkspaceAccess(projectId, currentUser, ['IN_PROGRESS', 'PENDING_FINAL_APPROVAL']);
+
+    const message = await prisma.projectMessage.findUnique({
+        where: { id: messageId }
+    });
+
+    if (!message || message.projectId !== projectId) {
+        throw new APIError('Message not found', 404);
+    }
+
+    if (message.userId !== currentUser.id) {
+        throw new APIError('You can only edit your own messages', 403);
+    }
+
+    const newContent = body.content ? String(body.content).trim() : '';
+    if (!newContent) {
+        throw new APIError('Message content cannot be empty', 400);
+    }
+
+    const updated = await prisma.projectMessage.update({
+        where: { id: messageId },
+        data: { content: newContent },
+        include: {
+            user: {
+                select: { id: true, fullName: true, role: true, email: true, jobTitle: true }
+            },
+            attachment: {
+                select: {
+                    id: true,
+                    title: true,
+                    fileUrl: true,
+                    docType: true,
+                    version: true,
+                    createdAt: true
+                }
+            }
+        }
+    });
+
+    return updated;
+};
+
+
+/**
+ * 5. Delete Message
+ */
+const deleteMessage = async (projectId, messageId, currentUser) => {
+    await verifyWorkspaceAccess(projectId, currentUser, ['IN_PROGRESS', 'PENDING_FINAL_APPROVAL']);
+
+    const message = await prisma.projectMessage.findUnique({
+        where: { id: messageId },
+        include: { attachment: true }
+    });
+
+    if (!message || message.projectId !== projectId) {
+        throw new APIError('Message not found', 404);
+    }
+
+    const isAuthor = message.userId === currentUser.id;
+
+    if (!isAuthor) {
+        throw new APIError('You can only delete your own messages', 403);
+    }
+
+    await prisma.$transaction(async (tx) => {
+        await tx.projectMessage.delete({ where: { id: messageId } });
+
+        if (message.attachmentId) {
+            await tx.document.delete({ where: { id: message.attachmentId } }).catch(() => {});
+        }
+    });
+
+    // Safely attempt file cleanup if an attachment existed
+    if (message.attachment?.fileUrl) {
+        try {
+            const filename = path.basename(message.attachment.fileUrl);
+            const uploadDir = path.resolve(__dirname, '../../uploads/documents');
+            const safeFilePath = path.join(uploadDir, filename);
+            if (fs.existsSync(safeFilePath) && safeFilePath.startsWith(uploadDir)) {
+                fs.unlinkSync(safeFilePath);
+            }
+        } catch {
+            // Ignore file unlink errors
+        }
+    }
+
+    return {
+        message: 'Message deleted successfully',
+        id: messageId
+    };
+};
+
+
 module.exports = {
     verifyWorkspaceAccess,
     getWorkspaceOverview,
-    getMessages
+    getMessages,
+    sendMessage,
+    editMessage,
+    deleteMessage
 };

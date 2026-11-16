@@ -77,8 +77,6 @@ const uploadFinalPaperDoc = handleUpload(
 
 const uploadWorkspaceAttachment = handleUpload(
     upload.fields([
-        { name: 'attachment', maxCount: 1 },
-        { name: 'file', maxCount: 1 },
         { name: 'draftDoc', maxCount: 1 }
     ])
 );

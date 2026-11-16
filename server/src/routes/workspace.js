@@ -25,5 +25,27 @@ router.get(
     workspaceController.getMessages
 );
 
+// 3. Send Message (Text and/or Draft Paper Attachment)
+router.post(
+    '/messages',
+    uploadWorkspaceAttachment,
+    validate(schemas.sendMessageSchema),
+    workspaceController.sendMessage
+);
+
+// 4. Edit Message
+router.patch(
+    '/messages/:messageId',
+    validate(schemas.editMessageSchema),
+    workspaceController.editMessage
+);
+
+// 5. Delete Message
+router.delete(
+    '/messages/:messageId',
+    validate(schemas.deleteMessageSchema),
+    workspaceController.deleteMessage
+);
+
 
 module.exports = router;
