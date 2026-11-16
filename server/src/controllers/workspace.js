@@ -66,11 +66,53 @@ const deleteMessage = async (req, res, next) => {
     }
 };
 
+const getSharedDrafts = async (req, res, next) => {
+    try {
+        const drafts = await workspaceService.getSharedDrafts(req.params.id, req.user);
+        res.status(200).json({
+            success: true,
+            count: drafts.length,
+            data: drafts
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getLatestFinalPaper = async (req, res, next) => {
+    try {
+        const result = await workspaceService.getLatestFinalPaper(req.params.id, req.user);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const downloadDocument = async (req, res, next) => {
+    try {
+        const { filePath, fileName } = await workspaceService.getDocumentForDownload(
+            req.params.id,
+            req.params.documentId,
+            req.user
+        );
+        res.download(filePath, fileName);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
 module.exports = {
     getWorkspaceOverview,
     getMessages,
     sendMessage,
     editMessage,
-    deleteMessage
+    deleteMessage,
+    getSharedDrafts,
+    getLatestFinalPaper,
+    downloadDocument
 };

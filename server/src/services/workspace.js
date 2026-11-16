@@ -396,11 +396,122 @@ const deleteMessage = async (projectId, messageId, currentUser) => {
 };
 
 
+/**
+ * 6. Retrieve Shared Draft Documents
+ */
+const getSharedDrafts = async (projectId, currentUser) => {
+    await verifyWorkspaceAccess(projectId, currentUser, [
+        'IN_PROGRESS',
+        'PENDING_FINAL_APPROVAL',
+        'PUBLISHED'
+    ]);
+
+    const drafts = await prisma.document.findMany({
+        where: {
+            projectId,
+            docType: 'DRAFT_PAPER'
+        },
+        orderBy: { version: 'desc' },
+        select: {
+            id: true,
+            title: true,
+            fileUrl: true,
+            docType: true,
+            version: true,
+            createdAt: true,
+            uploadedBy: {
+                select: { id: true, fullName: true, role: true, email: true }
+            }
+        }
+    });
+
+    return drafts;
+};
+
+/**
+ * 7. Retrieve Latest Final Paper
+ */
+const getLatestFinalPaper = async (projectId, currentUser) => {
+    const project = await verifyWorkspaceAccess(projectId, currentUser, [
+        'IN_PROGRESS',
+        'PENDING_FINAL_APPROVAL',
+        'PUBLISHED'
+    ]);
+
+    const finalPaper = await prisma.document.findFirst({
+        where: {
+            projectId,
+            docType: 'FINAL_PAPER'
+        },
+        orderBy: { version: 'desc' },
+        select: {
+            id: true,
+            title: true,
+            fileUrl: true,
+            docType: true,
+            version: true,
+            createdAt: true,
+            uploadedBy: {
+                select: { id: true, fullName: true, role: true, email: true }
+            }
+        }
+    });
+
+    return {
+        projectStatus: project.status,
+        finalPaper
+    };
+};
+
+/**
+ * 8. Secure Document Download
+ */
+const getDocumentForDownload = async (projectId, documentId, currentUser) => {
+    await verifyWorkspaceAccess(projectId, currentUser, [
+        'IN_PROGRESS',
+        'PENDING_FINAL_APPROVAL',
+        'PUBLISHED'
+    ]);
+
+    const document = await prisma.document.findUnique({
+        where: { id: documentId }
+    });
+
+    if (!document || document.projectId !== projectId) {
+        throw new APIError('Document not found in this project', 404);
+    }
+
+    const filename = path.basename(document.fileUrl);
+    const uploadDir = path.resolve(__dirname, '../../uploads/documents');
+    const safeFilePath = path.join(uploadDir, filename);
+
+    // Prevent directory traversal
+    if (!safeFilePath.startsWith(uploadDir)) {
+        throw new APIError('Invalid document path', 400);
+    }
+
+    if (!fs.existsSync(safeFilePath)) {
+        throw new APIError('Document file not found on disk', 404);
+    }
+
+    const ext = path.extname(safeFilePath) || '.pdf';
+    const downloadName = `${document.title.replace(/[^a-zA-Z0-9_-]/g, '_')}${ext}`;
+
+    return {
+        filePath: safeFilePath,
+        fileName: downloadName,
+        document
+    };
+};
+
 module.exports = {
     verifyWorkspaceAccess,
     getWorkspaceOverview,
     getMessages,
     sendMessage,
     editMessage,
-    deleteMessage
+    deleteMessage,
+    getSharedDrafts,
+    getLatestFinalPaper,
+    getDocumentForDownload
 };

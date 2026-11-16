@@ -47,5 +47,25 @@ router.delete(
     workspaceController.deleteMessage
 );
 
+// 6. Shared Draft Documents
+router.get(
+    '/documents/drafts',
+    validate(schemas.getWorkspaceSchema),
+    workspaceController.getSharedDrafts
+);
+
+// 7. Latest Final Paper
+router.get(
+    '/documents/final',
+    validate(schemas.getWorkspaceSchema),
+    workspaceController.getLatestFinalPaper
+);
+
+// 8. Secure Document Download
+router.get(
+    '/documents/:documentId/download',
+    validate(schemas.downloadDocumentSchema),
+    workspaceController.downloadDocument
+);
 
 module.exports = router;
