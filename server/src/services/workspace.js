@@ -3,7 +3,7 @@ const fs = require('fs');
 const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
 const deleteFiles = require('../../utils/deleteFiles');
-
+const getFile = require('../../utils/getFile');
 
 
 /**
@@ -375,17 +375,16 @@ const deleteMessage = async (projectId, messageId, currentUser) => {
         }
     });
 
-    // Safely attempt file cleanup if an attachment existed
+    // Safely delete attachment file from disk using getFile + deleteFiles
     if (message.attachment?.fileUrl) {
         try {
-            const filename = path.basename(message.attachment.fileUrl);
-            const uploadDir = path.resolve(__dirname, '../../uploads/documents');
-            const safeFilePath = path.join(uploadDir, filename);
-            if (fs.existsSync(safeFilePath) && safeFilePath.startsWith(uploadDir)) {
-                fs.unlinkSync(safeFilePath);
-            }
+            const { filePath } = await getFile(message.attachment.fileUrl, {
+                subDir: 'documents',
+                checkExists: false
+            });
+            await deleteFiles(filePath);
         } catch {
-            // Ignore file unlink errors
+            // Ignore invalid path errors during cleanup
         }
     }
 
@@ -481,25 +480,14 @@ const getDocumentForDownload = async (projectId, documentId, currentUser) => {
         throw new APIError('Document not found in this project', 404);
     }
 
-    const filename = path.basename(document.fileUrl);
-    const uploadDir = path.resolve(__dirname, '../../uploads/documents');
-    const safeFilePath = path.join(uploadDir, filename);
-
-    // Prevent directory traversal
-    if (!safeFilePath.startsWith(uploadDir)) {
-        throw new APIError('Invalid document path', 400);
-    }
-
-    if (!fs.existsSync(safeFilePath)) {
-        throw new APIError('Document file not found on disk', 404);
-    }
-
-    const ext = path.extname(safeFilePath) || '.pdf';
-    const downloadName = `${document.title.replace(/[^a-zA-Z0-9_-]/g, '_')}${ext}`;
+    const { filePath, fileName } = await getFile(document.fileUrl, {
+        subDir: 'documents',
+        title: document.title
+    });
 
     return {
-        filePath: safeFilePath,
-        fileName: downloadName,
+        filePath,
+        fileName,
         document
     };
 };
