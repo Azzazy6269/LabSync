@@ -11,8 +11,8 @@ model Document {
   docType      DocType
   version      Int             @default(1)
 
-  chunks       DocumentChunk[]
-  comments     Comment[]
+  chunks            DocumentChunk[]
+  messageAttachment ProjectMessage?
 
   createdAt    DateTime        @default(now())
 

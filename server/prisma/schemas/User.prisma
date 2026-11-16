@@ -30,9 +30,9 @@ model User {
   authoredProjects   Project[]  @relation("ProjectAuthor")
   supervisedProjects Project[]  @relation("ProjectSupervisor")
   
-  // Docs and Comments
+  // Docs and Messages
   uploadedDocuments  Document[]
-  comments           Comment[]
+  messages           ProjectMessage[]
 
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt

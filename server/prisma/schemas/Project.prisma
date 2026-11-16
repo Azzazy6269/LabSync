@@ -1,26 +1,26 @@
 model Project {
-  id           String        @id @default(uuid())
-  title        String
-  description  String        @db.Text
-  field        String        // Scientific field(Bioinformatics, Physics, Chemistry...)
-  status       ProjectStatus @default(PENDING_SUPERVISOR_ACKNOWLEDGEMENT)
+  id              String        @id @default(uuid())
+  title           String
+  description     String        @db.Text
+  field           String        // Scientific field(Bioinformatics, Physics, Chemistry...)
+  status          ProjectStatus @default(PENDING_ADMIN_APPROVAL)
   rejectionReason String?       @db.Text
 
   // Researcher
-  authorId     String
-  author       User          @relation("ProjectAuthor", fields: [authorId], references: [id])
+  authorId        String
+  author          User          @relation("ProjectAuthor", fields: [authorId], references: [id])
 
   // Supervisior
-  supervisorId String?
-  supervisor   User?          @relation("ProjectSupervisor", fields: [supervisorId], references: [id])
+  supervisorId    String?
+  supervisor      User?         @relation("ProjectSupervisor", fields: [supervisorId], references: [id])
 
-  // Docs and Comments related to the research
-  documents    Document[]
-  comments     Comment[]
-  chunks       DocumentChunk[]
+  // Docs and Messages related to the research
+  documents       Document[]
+  messages        ProjectMessage[]
+  chunks          DocumentChunk[]
 
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([authorId])
   @@index([supervisorId])
