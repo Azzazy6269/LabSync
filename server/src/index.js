@@ -2,8 +2,10 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+const http = require('http');
 const app = require('./app');
 const prisma = require('../config/prisma');
+const initSocket = require('../config/socket');
 const { startRagWorker } = require('./workers/ragWorker');
 
 const PORT = process.env.PORT || 1234;
@@ -26,8 +28,13 @@ const runServer = async () => {
 
         console.log('RAG worker initialization completed.');
 
-        // Start the HTTP server.
-        server = app.listen(PORT, () => {
+        // Start the HTTP server and Socket server.
+        server = http.createServer(app);
+        const io = initSocket(server);
+        app.set('io', io);
+
+
+        server.listen(PORT, () => {
             console.log(`Server is running on http://localhost:${PORT}`);
         });
 

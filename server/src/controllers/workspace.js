@@ -30,6 +30,10 @@ const sendMessage = async (req, res, next) => {
     try {
         const file = req.files?.attachment?.[0] || req.files?.file?.[0] || req.files?.draftDoc?.[0] || req.file || null;
         const message = await workspaceService.sendMessage(req.params.id, req.user, req.body, file);
+        
+        const io = req.app.get('io');
+        io.to(`project:${req.params.id}`).emit('message:new', message);
+
         res.status(201).json({
             success: true,
             message: 'Message sent successfully',
@@ -43,6 +47,10 @@ const sendMessage = async (req, res, next) => {
 const editMessage = async (req, res, next) => {
     try {
         const message = await workspaceService.editMessage(req.params.id, req.params.messageId, req.user, req.body);
+        
+        const io = req.app.get('io');
+        io.to(`project:${req.params.id}`).emit('message:updated', message);
+
         res.status(200).json({
             success: true,
             message: 'Message updated successfully',
@@ -56,6 +64,10 @@ const editMessage = async (req, res, next) => {
 const deleteMessage = async (req, res, next) => {
     try {
         const response = await workspaceService.deleteMessage(req.params.id, req.params.messageId, req.user);
+        
+        const io = req.app.get('io');
+        io.to(`project:${req.params.id}`).emit('message:deleted', { id: response.id });
+        
         res.status(200).json({
             success: true,
             message: response.message,
