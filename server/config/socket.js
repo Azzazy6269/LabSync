@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const prisma = require('./prisma');
-const { verifyWorkspaceAccess } = require('../services/workspace');
+const { verifyWorkspaceAccess } = require('../src/services/workspace');
 
 const initSocket = (httpServer) => {
     const io = new Server(httpServer, {
@@ -10,6 +10,10 @@ const initSocket = (httpServer) => {
 
     io.use(async (socket, next) => {
         try {
+            //const authHeader = socket.handshake.headers?.authorization;
+            //const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+        
+            //const token = socket.handshake.auth?.token || bearerToken;
             const token = socket.handshake.auth?.token;
             if (!token) return next(new Error('Authentication required'));
 
