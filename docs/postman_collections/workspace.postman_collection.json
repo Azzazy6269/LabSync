@@ -1,0 +1,327 @@
+{
+  "info": {
+    "_postman_id": "6a22d826-2189-4658-839b-e73d0a34e049",
+    "name": "workspace",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51603291"
+  },
+  "item": [
+    {
+      "name": "getWorkspaceOverview",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getMessages",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/messages?limit=3&before=7da2f18c-99a0-4251-8973-acc81bb17124",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "messages"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "3"
+            },
+            {
+              "key": "before",
+              "value": "7da2f18c-99a0-4251-8973-acc81bb17124"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "sendMessage",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "content",
+              "value": "yyyyyyyyyyyyyyyyyyyyyyyyyy",
+              "type": "text",
+              "uuid": "a19709ca-ed15-48d3-a840-d6be80acb01f"
+            },
+            {
+              "key": "draftDoc",
+              "type": "file",
+              "uuid": "1a5c2032-ca5b-456f-aeba-56e1b9489d93",
+              "src": "/E:/git/CrowdFunding_Platform/Crowdfunding Platform – JavaScript Project.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/messages",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "messages"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "editMessages",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"content\":\"lllllllllllllllllllll\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/messages/7e6ac328-7730-4a2c-b3d7-252064967378",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "messages",
+            "7e6ac328-7730-4a2c-b3d7-252064967378"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteMessage",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"content\":\"lllllllllllllllllllll\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/messages/7e6ac328-7730-4a2c-b3d7-252064967378",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "messages",
+            "7e6ac328-7730-4a2c-b3d7-252064967378"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getSharedDrafts",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/documents/drafts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "documents",
+            "drafts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getFinalPaper",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/documents/final",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "documents",
+            "final"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "downloadDocument",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNjZmJjN2Q1LWEwYjgtNDE2ZS05Yzk2LTNiZTc0OWVmNWVkZSIsImVtYWlsIjoic3VwZXJ2aXNvckBzeXN0ZW0uY29tIiwiZnVsbE5hbWUiOiJEci4gU2FyYWggQ29ubm9yIiwicm9sZSI6IlNVUEVSVklTT1IiLCJpc0VtYWlsVmVyaWZpZWQiOnRydWUsInN0YXR1cyI6IkFQUFJPVkVEIiwiaWF0IjoxNzk0Nzc0ODYwLCJleHAiOjE3OTQ4NjEyNjB9.XrMmIvjpBdT8ujkGeibAVRLeFIvlA3YOTP_bNAkmqNM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1234/api/v1/projects/8929778f-b254-4de1-999d-ab757a655864/workspace/documents/cb41ed0a-2801-4d3d-8b5e-8afd3f3da3b9/download",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "projects",
+            "8929778f-b254-4de1-999d-ab757a655864",
+            "workspace",
+            "documents",
+            "cb41ed0a-2801-4d3d-8b5e-8afd3f3da3b9",
+            "download"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
