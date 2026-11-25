@@ -6,6 +6,7 @@ const {
   ProjectStatus,
   DocType,
   RAGAccessLevel,
+  NotificationType,
 } = require('@prisma/client');
 const { PrismaPg } = require('@prisma/adapter-pg');
 const bcrypt = require('bcryptjs');
@@ -23,6 +24,7 @@ function createMockEmbedding(seedValue = 0.01) {
 
 async function main() {
   // Clean up tables in reverse dependency order to respect foreign key constraints
+  await prisma.notification.deleteMany({});
   await prisma.projectMessage.deleteMany({});
   await prisma.documentChunk.deleteMany({});
   await prisma.document.deleteMany({});
@@ -429,6 +431,66 @@ async function main() {
     },
   });
 
+
+  // ==========================================
+  // 7. SEED NOTIFICATIONS
+  // ==========================================
+  console.log('🌱 Seeding Notifications...');
+
+  await prisma.notification.createMany({
+    data: [
+      // 1. FINAL_PAPER_SUBMITTED ->  Admin (unread)
+      {
+        userId: admin.id,
+        type: NotificationType.FINAL_PAPER_SUBMITTED,
+        title: 'Final Paper Awaiting Approval',
+        message: `Alex Vance submitted the camera-ready final paper for "${projectPendingFinal.title}".`,
+        link: `/projects/${projectPendingFinal.id}`,
+        isRead: false,
+        createdAt: new Date(Date.now() - 10 * 60 * 1000), //10 minutes ago
+      },
+      // 2. PROJECT_ASSIGNED ->  Supervisor (unread)
+      {
+        userId: supervisor.id,
+        type: NotificationType.PROJECT_ASSIGNED,
+        title: 'New Project Supervision Request',
+        message: `Jane Google assigned you as supervisor for "${projectPendingSupervisor.title}".`,
+        link: `/projects/${projectPendingSupervisor.id}`,
+        isRead: false,
+        createdAt: new Date(Date.now() - 30 * 60 * 1000)//30 minutes ago
+      },
+      // 3. REVISION_REQUESTED ->  Researcher 1 (marked as read)
+      {
+        userId: researcher1.id,
+        type: NotificationType.REVISION_REQUESTED,
+        title: 'Revision Requested on Draft',
+        message: `Dr. Sarah Connor requested revisions on "${projectPendingFinal.title}": Expand Section 4 with ZGC tail-latency percentiles.`,
+        link: `/projects/${projectPendingFinal.id}`,
+        isRead: true,
+        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+      },
+      // 4. PROJECT_PUBLISHED ->  Researcher 1 (marked as read)
+      {
+        userId: researcher1.id,
+        type: NotificationType.PROJECT_PUBLISHED,
+        title: 'Project Published',
+        message: `Your project "${projectPublished.title}" has been approved and published.`,
+        link: `/projects/${projectPublished.id}`,
+        isRead: true,
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+      },
+      // 5. PROJECT_REJECTED ->  Researcher 1 (unread)
+      {
+        userId: researcher1.id,
+        type: NotificationType.PROJECT_REJECTED,
+        title: 'Project Submission Rejected',
+        message: `Your project "${projectRejected.title}" was rejected: Missing signed university ethics & lab safety clearance documentation.`,
+        link: `/projects/${projectRejected.id}`,
+        isRead: false,
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), //3 days ago
+      },
+    ],
+  });
   console.log('✅ All tables seeded successfully!');
 }
 
