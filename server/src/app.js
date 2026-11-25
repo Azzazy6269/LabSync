@@ -10,6 +10,7 @@ const AuthRoutes = require('./routes/auth');
 const UsersRoutes = require('./routes/users');
 const ProjectsRoutes = require('./routes/projects');
 const RAGRoutes = require('./routes/rag');
+const NotificationsRoutes = require('./routes/notifications');
 const app = express();
 app.use(express.json());
 
@@ -36,6 +37,7 @@ apiRouter.use('/auth', AuthRoutes);
 apiRouter.use('/users', UsersRoutes);
 apiRouter.use('/projects', ProjectsRoutes);
 apiRouter.use('/knowledge-base', RAGRoutes);
+apiRouter.use('/notifications', NotificationsRoutes);
 
 app.use('/api/v1', apiRouter);
 
