@@ -1,13 +1,17 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const prisma = require('./prisma');
-const { verifyWorkspaceAccess } = require('../src/services/workspace');
+const socketService = require('../src/services/socket');
 
 const initSocket = (httpServer) => {
     const io = new Server(httpServer, {
         cors: { origin: process.env.CLIENT_URL, credentials: true }
     });
 
+    // singlton
+    socketService.setIO(io);
+
+    // authentication middleware
     io.use(async (socket, next) => {
         try {
             //const authHeader = socket.handshake.headers?.authorization;
@@ -28,32 +32,9 @@ const initSocket = (httpServer) => {
         }
     });
 
+    // delegates socketService to handle events
     io.on('connection', (socket) => {
-        socket.on('workspace:join', async (projectId) => {
-            try {
-                await verifyWorkspaceAccess(projectId, socket.user, [
-                    'IN_PROGRESS',
-                    'PENDING_FINAL_APPROVAL',
-                    'PUBLISHED'
-                ]);
-
-                socket.join(`project:${projectId}`);
-            } catch (error) {
-                socket.emit('workspace:error', { message: error.message });
-            }
-        });
-
-        socket.on('workspace:leave', (projectId) => {
-            socket.leave(`project:${projectId}`);
-        });
-
-        socket.on('workspace:typing', ({ projectId, isTyping }) => {
-            socket.to(`project:${projectId}`).emit('workspace:typing', {
-                userId: socket.user.id,
-                fullName: socket.user.fullName,
-                isTyping
-            });
-        });
+        socketService.registerHandlers(socket);
     });
 
     return io;
