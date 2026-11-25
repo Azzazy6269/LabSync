@@ -1,7 +1,8 @@
 const prisma = require('../../config/prisma');
 const APIError = require('../../utils/APIError');
 const deleteFiles = require('../../utils/deleteFiles');
-const { triggerRagEmbeddingJob } = require('../queues/ragQueue')
+const { triggerRagEmbeddingJob } = require('../queues/ragQueue');
+const notificationsService = require('./notifications');
 
 
 
@@ -303,6 +304,14 @@ const adminAssignSupervisor = async (id, supervisorId) => {
         }
     });
 
+    await notificationsService.createNotification({
+        userId: updatedProject.supervisorId,
+        type: 'PROJECT_ASSIGNED',
+        title: 'New Research Supervision Assigned',
+        message: `You have been assigned as the supervisor for project: "${project.title}".`,
+        link: `/projects/${project.id}`
+    });
+
     return {
         message: 'Supervisor assigned successfully. Project status updated to PENDING_SUPERVISOR_ACKNOWLEDGEMENT.',
         data: updatedProject
@@ -418,12 +427,22 @@ const submitFinalPaper = async (currentUser, id, body, file) => {
         };
     });
 
+    if (project.supervisorId) {
+        await notificationsService.createNotification({
+            userId: project.supervisorId,
+            type: 'FINAL_PAPER_SUBMITTED',
+            title: 'Final Paper Submitted for Review',
+            message: `The researcher has submitted the final paper for "${project.title}" and is awaiting your approval.`,
+            link: `/projects/${project.id}`
+        });
+    }
+
     return {
         message: 'Final paper submitted successfully. Awaiting supervisor approval.',
         data: result
     };
     }catch(error){
-        await deleteFiles(files);
+        if (file) await deleteFiles([file]);
         throw error;
     }
     
@@ -486,6 +505,14 @@ const finalApproval = async (currentUser, id, body) => {
         console.warn(`⚠️ No final paper document found to trigger RAG for project: ${id}`);
     }
 
+    await notificationsService.createNotification({
+        userId: project.authorId,
+        type: 'PROJECT_PUBLISHED',
+        title: 'Research Project Approved & Published',
+        message: `Your research project "${project.title}" has been approved by your supervisor and published to the Lab Knowledge Base.`,
+        link: `/projects/${project.id}`
+    });
+
     return {
         message: 'Supervisor approved final paper. Published to laboratory knowledge base.',
         data: updatedProject
@@ -518,6 +545,14 @@ const adminReject = async (id, rejectionReason) => {
             rejectionReason: true,
             updatedAt: true
         }
+    });
+
+    await notificationsService.createNotification({
+        userId: project.authorId,
+        type: 'PROJECT_REJECTED',
+        title: 'Research Proposal Rejected',
+        message: `Your research proposal "${project.title}" was rejected by the admin. Reason: ${rejectionReason}`,
+        link: `/projects/${project.id}`
     });
 
     return {
@@ -567,6 +602,14 @@ const requestChanges = async (currentUser, id, feedback) => {
         return updated;
     });
 
+    await notificationsService.createNotification({
+        userId: project.authorId,
+        type: 'REVISION_REQUESTED',
+        title: 'Revisions Requested on Final Paper',
+        message: `Your supervisor requested changes on "${project.title}": ${feedback}`,
+        link: `/projects/${project.id}/workspace`
+    });
+
     return {
         message: 'Final paper returned to researcher for revisions. Status reverted to IN_PROGRESS.',
         data: {
@@ -589,3 +632,4 @@ module.exports = {
     adminReject,
     requestChanges
 };
+
