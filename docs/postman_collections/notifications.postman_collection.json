@@ -1,0 +1,122 @@
+{
+  "info": {
+    "_postman_id": "905b96c2-d024-46a3-9d85-12fcbd1ae07e",
+    "name": "notifications",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51603291"
+  },
+  "item": [
+    {
+      "name": "getNotifications",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczZjQyMGNkLWE2OTItNGQxOC05YmZlLWE3NDJiNWZkYTBiYiIsImVtYWlsIjoicmVzZWFyY2hlcjFAc3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiQWxleCBWYW5jZSIsInJvbGUiOiJSRVNFQVJDSEVSIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5NTU2NzcxOSwiZXhwIjoxNzk1NjU0MTE5fQ.dkmebRPHlSEq2GEAea3d6S7YlVCAuvlfYOkrwU6rsgo",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "/*\r\n{\r\n  \"email\":\"researcher1@system.com\",\r\n  \"password\":\"Password123!\"\r\n}\r\n*/\r\n/*\r\n{\r\n    \"email\": \"admin@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n*/\r\n\r\n{\r\n    \"email\": \"supervisor@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n"
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/notifications/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "notifications",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "markAllAsRead",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczZjQyMGNkLWE2OTItNGQxOC05YmZlLWE3NDJiNWZkYTBiYiIsImVtYWlsIjoicmVzZWFyY2hlcjFAc3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiQWxleCBWYW5jZSIsInJvbGUiOiJSRVNFQVJDSEVSIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5NTU2NzcxOSwiZXhwIjoxNzk1NjU0MTE5fQ.dkmebRPHlSEq2GEAea3d6S7YlVCAuvlfYOkrwU6rsgo",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "/*\r\n{\r\n  \"email\":\"researcher1@system.com\",\r\n  \"password\":\"Password123!\"\r\n}\r\n*/\r\n/*\r\n{\r\n    \"email\": \"admin@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n*/\r\n\r\n{\r\n    \"email\": \"supervisor@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n"
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/notifications/read-all",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "notifications",
+            "read-all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "markAsRead",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjczZjQyMGNkLWE2OTItNGQxOC05YmZlLWE3NDJiNWZkYTBiYiIsImVtYWlsIjoicmVzZWFyY2hlcjFAc3lzdGVtLmNvbSIsImZ1bGxOYW1lIjoiQWxleCBWYW5jZSIsInJvbGUiOiJSRVNFQVJDSEVSIiwiaXNFbWFpbFZlcmlmaWVkIjp0cnVlLCJzdGF0dXMiOiJBUFBST1ZFRCIsImlhdCI6MTc5NTU2NzcxOSwiZXhwIjoxNzk1NjU0MTE5fQ.dkmebRPHlSEq2GEAea3d6S7YlVCAuvlfYOkrwU6rsgo",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "/*\r\n{\r\n  \"email\":\"researcher1@system.com\",\r\n  \"password\":\"Password123!\"\r\n}\r\n*/\r\n/*\r\n{\r\n    \"email\": \"admin@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n*/\r\n\r\n{\r\n    \"email\": \"supervisor@system.com\",\r\n    \"password\": \"Password123!\"\r\n}\r\n"
+        },
+        "url": {
+          "raw": "http://localhost:1234/api/v1/notifications/1df7c3ce-7b8d-4d3a-a3e5-c8ada4d52d05/read",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1234",
+          "path": [
+            "api",
+            "v1",
+            "notifications",
+            "1df7c3ce-7b8d-4d3a-a3e5-c8ada4d52d05",
+            "read"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
