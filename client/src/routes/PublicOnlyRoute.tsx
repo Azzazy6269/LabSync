@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '../stores/useAuthStore';
+import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from './paths';
 
 interface PublicOnlyRouteProps {
@@ -8,25 +8,33 @@ interface PublicOnlyRouteProps {
 }
 
 export const PublicOnlyRoute = ({ children }: PublicOnlyRouteProps) => {
-  const { isAuthenticated, accessToken, user } = useAuthStore();
+  const { user, authStatus } = useAuth();
 
-  if (isAuthenticated && accessToken && user) {
-    if (user.status === 'SUSPENDED') {
-      return <Navigate to={ROUTES.SUSPENDED} replace />;
-    }
-
-    if (!user.isEmailVerified) {
-      return (
-        <Navigate
-          to={ROUTES.LOGIN}
-          state={{ email: user.email }}
-          replace
-        />
-      );
-    }
-
-    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  if (authStatus === 'loading') {
+    return <div>Loading...</div>;
   }
 
-  return children ? <>{children}</> : <Outlet />;
+  if (authStatus === 'unauthenticated') {
+    return children ? <>{children}</> : <Outlet />;
+  }
+
+  if (authStatus === 'error' || !user) {
+    return <div>Unable to verify your session. Please try again.</div>;
+  }
+
+  if (user.status === 'SUSPENDED') {
+    return <Navigate to={ROUTES.SUSPENDED} replace />;
+  }
+
+  if (!user.isEmailVerified) {
+    return (
+      <Navigate
+        to={ROUTES.LOGIN}
+        state={{ email: user.email }}
+        replace
+      />
+    );
+  }
+
+  return <Navigate to={ROUTES.DASHBOARD} replace />;
 };

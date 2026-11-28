@@ -28,6 +28,30 @@ export const getErrorMessage = (error: unknown): string => {
   return 'Something went wrong. Please try again.';
 };
 
+export const useAuth = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const profileQuery = useProfile();
+
+  const user = accessToken
+    ? profileQuery.data ?? null
+    : null;
+
+  const authStatus = !accessToken
+    ? 'unauthenticated'
+    : user
+      ? 'authenticated'
+      : profileQuery.isPending
+        ? 'loading'
+        : 'error';
+
+  return {
+    ...profileQuery,
+    user,
+    authStatus,
+    isAuthenticated: authStatus === 'authenticated',
+  };
+};
+
 export const useProfile = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
