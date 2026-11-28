@@ -4,7 +4,7 @@ const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
 const nationalIdRegex = /^[0-9]{14}$/;
 const otpRegex = /^[0-9]{6}$/;
 
-export const userRoleSchema = z.enum(['RESEARCHER', 'ADMIN', 'SUPERVISOR']);
+export const userRoleSchema = z.enum(['RESEARCHER', 'ADMIN', 'SUPERVISOR','MEMBER']);
 
 // 1. Sign Up Schema
 export const signUpSchema = z
