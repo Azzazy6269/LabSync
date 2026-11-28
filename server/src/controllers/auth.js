@@ -54,8 +54,8 @@ const resendOtp = async (req, res, next) => {
 
 const signIn = async(req,res,next)=>{
     try {
-        const user = await authService.signIn(req.body);
-        res.status(201).json({ message: "User Logged In successfully", data: {user} })
+        const data = await authService.signIn(req.body);
+        res.status(201).json({ message: "User Logged In successfully", data })
     } catch (error) {
         next(error);
     }
